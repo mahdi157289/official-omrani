@@ -57,10 +57,8 @@ export function ClientLayoutWrapper({
   isAdmin: boolean;
 }) {
   return (
-    <CartProvider locale={locale}>
-      <ClientLayoutSafe locale={locale} isAdmin={isAdmin}>
-        {children}
-      </ClientLayoutSafe>
-    </CartProvider>
+    <ClientLayoutSafe locale={locale} isAdmin={isAdmin}>
+      {children}
+    </ClientLayoutSafe>
   );
 }

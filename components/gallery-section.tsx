@@ -1,4 +1,4 @@
-import { prisma } from '@/lib/prisma';
+// Removed static prisma import to use dynamic import for better error isolation
 import Image from 'next/image';
 import { SectionTitle } from '@/components/ui/section-title';
 import { FadeIn } from '@/components/ui/fade-in';
@@ -6,6 +6,7 @@ import { GlassCard } from '@/components/ui/glass-card';
 
 async function getGalleryItems() {
   try {
+    const { prisma } = await import('@/lib/prisma');
     return await prisma.galleryItem.findMany({
       where: {
         isActive: true,
