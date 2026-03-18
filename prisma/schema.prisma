@@ -1,0 +1,509 @@
+// ============================================
+// DATABASE SCHEMA - Makroudh Omrani E-commerce
+// ============================================
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// CORE MODELS
+// ============================================
+
+model User {
+  id              String      @id @default(cuid())
+  email           String      @unique
+  emailVerified   Boolean     @default(false)
+  phone           String?     @unique
+  phoneVerified   Boolean     @default(false)
+  firstName       String?
+  lastName        String?
+  fullName        String?
+  dateOfBirth     DateTime?
+  password        String?
+  resetToken      String?     @unique
+  resetTokenExpiry DateTime?
+  role            String      @default("CUSTOMER") // UserRole
+  status          String      @default("ACTIVE")   // UserStatus
+  preferredLanguage String    @default("ar")
+  newsletterSubscribed Boolean @default(false)
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  lastLoginAt     DateTime?
+  addresses       Address[]
+  orders          Order[]
+  reviews         Review[]
+  wishlistItems   WishlistItem[]
+  activityLogs    ActivityLog[]
+
+  @@index([email])
+  @@index([phone])
+  @@index([status])
+  @@index([createdAt])
+  @@map("users")
+}
+
+model Address {
+  id              String    @id @default(cuid())
+  userId          String
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  label           String?
+  recipientName   String
+  phone           String
+  streetAddress   String
+  city            String
+  state           String?
+  postalCode      String?
+  country         String    @default("Tunisia")
+  latitude        Float?
+  longitude       Float?
+  isDefault       Boolean   @default(false)
+  isActive        Boolean   @default(true)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([userId])
+  @@index([userId, isDefault])
+  @@index([city])
+  @@map("addresses")
+}
+
+model Product {
+  id              String      @id @default(cuid())
+  sku             String      @unique
+  slug            String      @unique
+  nameAr          String
+  nameFr          String
+  nameEn          String?
+  descriptionAr   String
+  descriptionFr   String
+  descriptionEn   String?
+  basePrice       Decimal
+  comparePrice    Decimal?
+  costPrice       Decimal?
+  weightUnit      String      @default("g")
+  stockQuantity   Int         @default(0)
+  lowStockThreshold Int       @default(10)
+  trackInventory  Boolean     @default(true)
+  ingredientsAr   String?
+  ingredientsFr   String?
+  ingredientsEn   String?
+  shelfLifeDays   Int?
+  storageInstructionsAr String?
+  storageInstructionsFr String?
+  status          String      @default("DRAFT") // ProductStatus
+  isFeatured      Boolean     @default(false)
+  isBestSeller    Boolean     @default(false)
+  isNew           Boolean     @default(true)
+  metaTitleAr     String?
+  metaTitleFr     String?
+  metaDescriptionAr String?
+  metaDescriptionFr String?
+  keywords        String?
+  categoryId      String
+  category        Category    @relation(fields: [categoryId], references: [id])
+  images          Media[]
+  variants        ProductVariant[]
+  orderItems      OrderItem[]
+  reviews         Review[]
+  wishlistItems   WishlistItem[]
+  events          Event[]      @relation("EventProducts")
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  publishedAt     DateTime?
+
+  @@index([sku])
+  @@index([slug])
+  @@index([categoryId])
+  @@index([status])
+  @@index([isFeatured])
+  @@index([isBestSeller])
+  @@index([createdAt])
+  @@index([basePrice])
+  @@map("products")
+}
+
+model ProductVariant {
+  id              String    @id @default(cuid())
+  productId       String
+  product         Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  nameAr          String
+  nameFr          String
+  sku             String    @unique
+  weight          String
+  priceModifier   Decimal   @default(0)
+  stockQuantity   Int       @default(0)
+  isActive        Boolean   @default(true)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  orderItems      OrderItem[]
+
+  @@index([productId])
+  @@index([sku])
+  @@index([weight])
+  @@map("product_variants")
+}
+
+model Category {
+  id              String    @id @default(cuid())
+  nameAr          String
+  nameFr          String
+  nameEn          String?
+  slug            String    @unique
+  descriptionAr   String?
+  descriptionFr   String?
+  descriptionEn   String?
+  parentId        String?
+  parent          Category? @relation("CategoryToCategory", fields: [parentId], references: [id])
+  children        Category[] @relation("CategoryToCategory")
+  imageId         String?
+  image           Media?    @relation("CategoryCoverImage", fields: [imageId], references: [id])
+  displayOrder    Int       @default(0)
+  isActive        Boolean   @default(true)
+  isFeatured      Boolean   @default(false)
+  metaTitleAr     String?
+  metaTitleFr     String?
+  metaDescriptionAr String?
+  metaDescriptionFr String?
+  products        Product[]
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  mediaItems      Media[]   @relation("MediaCategory")
+
+  @@index([slug])
+  @@index([parentId])
+  @@index([displayOrder])
+  @@index([isActive])
+  @@map("categories")
+}
+
+model Media {
+  id              String    @id @default(cuid())
+  fileName        String
+  fileSize        Int?
+  mimeType        String?
+  type            String    @default("IMAGE") // MediaType
+  cloudinaryId    String    @unique
+  url             String
+  secureUrl       String
+  format          String?
+  width           Int?
+  height           Int?
+  altTextAr       String?
+  altTextFr       String?
+  altTextEn       String?
+  usageCount      Int       @default(0)
+  productId       String?
+  product         Product?  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  categoryId      String?
+  category        Category? @relation("MediaCategory", fields: [categoryId], references: [id], onDelete: Cascade)
+  eventId         String?
+  event           Event?    @relation("MediaEvent", fields: [eventId], references: [id], onDelete: Cascade)
+  uploadedAt      DateTime  @default(now())
+  
+  // Inverse relations for one-to-one
+  categoryCover   Category[] @relation("CategoryCoverImage")
+  eventCover      Event[]    @relation("EventCoverImage")
+  packageImage    Package[]  @relation("PackageImage")
+  galleryItem     GalleryItem? @relation("GalleryMedia")
+
+  @@index([cloudinaryId])
+  @@index([productId])
+  @@index([type])
+  @@index([uploadedAt])
+  @@map("media")
+}
+
+model Order {
+  id              String        @id @default(cuid())
+  orderNumber     String        @unique
+  userId          String?
+  user            User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
+  customerName    String
+  customerEmail   String
+  customerPhone   String
+  deliveryType    String        // DeliveryType
+  deliveryAddress String?
+  deliveryZone    String?
+  deliveryDate    DateTime?
+  deliveryTimeSlot String?
+  paymentMethod   String        @default("CASH_ON_DELIVERY") // PaymentMethod
+  paymentStatus   String        @default("PENDING") // PaymentStatus
+  paymentReference String?
+  subtotal        Decimal
+  deliveryFee     Decimal       @default(0)
+  discountAmount  Decimal       @default(0)
+  taxAmount       Decimal       @default(0)
+  totalAmount     Decimal
+  status          String        @default("PENDING") // OrderStatus
+  statusHistory   String?       // Json
+  customerNotes   String?
+  internalNotes   String?
+  items           OrderItem[]
+  reviews         Review[]
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  confirmedAt     DateTime?
+  preparedAt      DateTime?
+  deliveredAt     DateTime?
+  cancelledAt     DateTime?
+
+  @@index([orderNumber])
+  @@index([userId])
+  @@index([customerEmail])
+  @@index([customerPhone])
+  @@index([status])
+  @@index([createdAt])
+  @@index([deliveryDate])
+  @@index([paymentStatus])
+  @@map("orders")
+}
+
+model OrderItem {
+  id              String  @id @default(cuid())
+  orderId         String
+  order           Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId       String?
+  product         Product? @relation(fields: [productId], references: [id])
+  packageId       String?
+  package         Package? @relation(fields: [packageId], references: [id])
+  variantId       String?
+  variant         ProductVariant? @relation(fields: [variantId], references: [id])
+  variantNameAr   String?
+  variantNameFr   String?
+  quantity        Int
+  unitPrice       Decimal
+  weight          String?
+  totalPrice      Decimal
+
+  @@index([orderId])
+  @@index([productId])
+  @@index([packageId])
+  @@map("order_items")
+}
+
+model Event {
+  id              String    @id @default(cuid())
+  titleAr         String
+  titleFr         String
+  slug            String    @unique
+  descriptionAr   String
+  descriptionFr   String
+  startDate       DateTime
+  endDate         DateTime?
+  isAllDay        Boolean   @default(false)
+  imageId         String?
+  image           Media?    @relation("EventCoverImage", fields: [imageId], references: [id])
+  backgroundColor String?
+  textColor       String?
+  isActive        Boolean   @default(true)
+  isFeatured      Boolean   @default(false)
+  locationAr      String?
+  locationFr      String?
+  address         String?
+  products        Product[] @relation("EventProducts")
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  publishedAt     DateTime?
+  mediaItems      Media[]   @relation("MediaEvent")
+
+  @@index([slug])
+  @@index([startDate])
+  @@index([endDate])
+  @@index([isActive])
+  @@index([isFeatured])
+  @@map("events")
+}
+
+model Review {
+  id              String    @id @default(cuid())
+  productId       String
+  product         Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  userId          String
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  orderId         String?
+  order           Order?    @relation(fields: [orderId], references: [id])
+  rating          Int
+  titleAr         String?
+  titleFr        String?
+  commentAr       String?
+  commentFr        String?
+  isApproved      Boolean   @default(false)
+  isFeatured      Boolean   @default(false)
+  moderatorNotes  String?
+  helpfulCount    Int       @default(0)
+  notHelpfulCount Int       @default(0)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([productId])
+  @@index([userId])
+  @@index([rating])
+  @@index([isApproved])
+  @@index([createdAt])
+  @@map("reviews")
+}
+
+model WishlistItem {
+  id              String    @id @default(cuid())
+  userId          String
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId       String
+  product         Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  notes           String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@unique([userId, productId])
+  @@index([userId])
+  @@index([productId])
+  @@map("wishlist_items")
+}
+
+model SiteConfig {
+  id              String    @id @default(cuid())
+  key             String    @unique
+  group           String    @default("general")
+  value           String?   // Json
+  valueType       String    @default("string")
+  labelAr         String?
+  labelFr         String?
+  descriptionAr   String?
+  descriptionFr   String?
+  isPublic        Boolean   @default(false)
+  validationRules String?
+  options         String?   // Json
+  updatedBy       String?
+  updatedAt       DateTime  @updatedAt
+
+  @@index([key])
+  @@index([group])
+  @@map("site_config")
+}
+
+model DeliveryZone {
+  id              String    @id @default(cuid())
+  nameAr          String
+  nameFr          String
+  postalCodes     String    // String[] encoded as JSON or CSV
+  cities          String    // String[] encoded as JSON or CSV
+  deliveryFee     Decimal
+  minOrderAmount  Decimal?
+  freeDeliveryThreshold Decimal?
+  estimatedMinDays Int      @default(1)
+  estimatedMaxDays Int      @default(3)
+  deliveryDays    String    // String[] encoded as JSON or CSV
+  cutOffTime      String?
+  isActive        Boolean   @default(true)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([nameAr])
+  @@index([isActive])
+  @@map("delivery_zones")
+}
+
+model PageView {
+  id              String    @id @default(cuid())
+  sessionId       String
+  visitorId       String?
+  userAgent       String?
+  ipAddress       String?
+  url             String
+  path            String
+  queryParams     String?   // Json
+  referrer        String?
+  timeOnPage      Int?
+  scrollDepth     Float?
+  deviceType      String?
+  browser         String?
+  os              String?
+  screenResolution String?
+  country         String?
+  city            String?
+  viewedAt        DateTime  @default(now())
+
+  @@index([sessionId])
+  @@index([visitorId])
+  @@index([path])
+  @@index([viewedAt])
+  @@index([country])
+  @@map("page_views")
+}
+
+model ActivityLog {
+  id              String    @id @default(cuid())
+  userId          String?
+  user            User?     @relation(fields: [userId], references: [id])
+  userRole        String?   // UserRole
+  ipAddress       String?
+  action          String
+  entityType      String
+  entityId        String?
+  entityName      String?
+  oldValues       String?   // Json
+  newValues       String?   // Json
+  changes         String?   // Json
+  descriptionAr   String?
+  descriptionFr   String?
+  performedAt     DateTime  @default(now())
+
+  @@index([userId])
+  @@index([action])
+  @@index([entityType])
+  @@index([entityId])
+  @@index([performedAt])
+  @@map("activity_logs")
+}
+
+model Package {
+  id              String    @id @default(cuid())
+  nameAr          String
+  nameFr          String
+  nameEn          String?
+  slug            String    @unique
+  descriptionAr   String
+  descriptionFr   String
+  descriptionEn   String?
+  ingredientsAr   String?
+  ingredientsFr   String?
+  ingredientsEn   String?
+  price           Decimal
+  discountPrice   Decimal?
+  imageId         String?
+  image           Media?    @relation("PackageImage", fields: [imageId], references: [id])
+  isFeatured      Boolean   @default(false)
+  isActive        Boolean   @default(true)
+  displayOrder    Int       @default(0)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  orderItems      OrderItem[]
+  
+  @@index([slug])
+  @@index([isActive])
+  @@map("packages")
+}
+
+model GalleryItem {
+  id              String    @id @default(cuid())
+  titleAr         String?
+  titleFr         String?
+  descriptionAr   String?
+  descriptionFr   String?
+  mediaId         String    @unique
+  media           Media     @relation("GalleryMedia", fields: [mediaId], references: [id])
+  displayOrder    Int       @default(0)
+  isActive        Boolean   @default(true)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([isActive])
+  @@index([displayOrder])
+  @@map("gallery_items")
+}

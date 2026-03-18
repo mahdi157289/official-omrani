@@ -1,0 +1,75 @@
+11. Content Requirements
+11.1 Copy and Messaging
+Tone of Voice: Warm, authentic, and inviting. Language should reflect traditional craftsmanship and family heritage, while also being clear and trustworthy for commercial transactions.
+
+Key Messages: "Taste of Tradition," "Crafted in Kairouan," "Delivered to Your Door." Messaging should emphasize quality ingredients, time-honored recipes, and convenience.
+
+Error Messages: Helpful and guiding. Should be translated in all supported languages (e.g., "Please select a weight option before adding to cart.").
+
+11.2 Localization
+Supported Languages: Arabic (primary, RTL), French, English.
+
+Implementation: Use next-intl for internationalized routing and message management. The language switcher will be a fixed-position bubble/button on the right side of the screen, allowing instant switching without reloading the entire page.
+
+12. Data and Analytics
+12.1 Tracking Requirements
+User Events: page_view, product_view, add_to_cart, begin_checkout, purchase, user_signup (including automatic).
+
+E-commerce Events: Capture value, currency, items (with product ID, name, category, price, quantity) for purchase events.
+
+Admin Events: admin_login, product_published, order_status_updated.
+
+12.2 Analytics Tools
+Website Analytics: Google Analytics 4 (GA4) for general traffic and user behavior.
+
+Product Analytics: A custom-built analytics dashboard within the Payload CMS admin panel for business intelligence. This dashboard will query the PostgreSQL database directly via Prisma to display sales data, product performance, and customer metrics.
+
+12.3 Reporting Needs
+Admin Dashboard: Must display:
+
+Sales overview (revenue, orders) by day/week/month.
+
+Top-selling products and categories.
+
+Order status distribution (e.g., Pending, Delivered).
+
+Customer metrics (new vs. returning).
+
+Public Reporting: No public reporting required.
+
+13. Integration Requirements
+13.1 Third-Party Integrations
+Service Name	Purpose	Integration Type	Data Exchanged
+Cloudinary	Media storage, optimization, and delivery.	SDK & Upload Preset	Image/video files uploaded from Payload CMS; returns optimized URL.
+Email Service (e.g., Resend, SendGrid)	Sending order confirmations and account claim emails.	API	Order details, customer email, account claim tokens.
+WhatsApp Business API	Sending order notifications to the store owner.	API (Future Phase)	Order number, customer name, summary.
+13.2 Internal Integrations
+Payload CMS → Frontend Revalidation: When content is published in the admin panel, a webhook or internal API call (/api/admin/revalidate) will trigger Next.js On-Demand Revalidation for the affected routes, making updates live instantly.
+
+Database → Admin Dashboard: The custom analytics dashboard will use Prisma Client to run aggregate queries on the Order, OrderItem, and Product tables.
+
+14. Testing Requirements
+14.1 Testing Types
+Unit Testing: Jest and React Testing Library for utilities, hooks, and components.
+
+Integration Testing: Testing API routes and database interactions.
+
+End-to-End (E2E) Testing: Cypress for critical user flows (guest checkout, admin login, product management).
+
+User Acceptance Testing (UAT): The store owner will test the admin panel and checkout flow before launch.
+
+14.2 Test Cases (Critical Scenarios)
+Guest Checkout: A user can add a product to cart, fill the order form, and successfully place an order without a pre-existing account.
+
+Automatic Account Creation: After a guest checkout, the system creates a user record and sends an account claim email.
+
+Admin Real-Time Update: An admin publishes a product change, and the update appears on the live storefront without a manual refresh.
+
+Multi-language Switch: User switches language from Arabic to French, and all UI text and content updates correctly.
+
+14.3 Quality Benchmarks
+Code Coverage: >80% for core business logic (checkout, order processing).
+
+Performance: Lighthouse Performance score >90 on key pages.
+
+Zero Critical Bugs: All E2E test cases must pass before production deployment.

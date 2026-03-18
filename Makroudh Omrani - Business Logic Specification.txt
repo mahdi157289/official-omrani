@@ -1,0 +1,338 @@
+1. PRODUCT PRICING & INVENTORY LOGIC
+1.1 Pricing Strategy
+Base Price Model: All products have a base price per 100g. Display prices are calculated based on selected weight variants.
+
+Weight Variants: Standard weights are 250g, 500g, 1kg, and 2kg. Gift boxes have fixed weights (e.g., "Assortment Box: 1.5kg").
+
+Price Calculation Formula: Display Price = Base Price × (Selected Weight in grams / 100)
+
+Compare Pricing: Optional "original price" display for promotional items. Discount percentage is automatically calculated: Discount % = ((Compare Price - Display Price) / Compare Price) × 100
+
+Currency: All prices in Tunisian Dinar (TND). Display format: "XX.XXX DT" (three decimal places standard for millimes).
+
+1.2 Gift Boxes (Coffrets Cadeaux) Pricing
+Fixed Composition Boxes: Pre-defined assortments with fixed content and price (e.g., "Eid Luxury Box" contains specific items).
+
+Custom Boxes (Future): Customers select individual items to build custom gift boxes. Price is sum of selected items plus packaging fee.
+
+Seasonal Pricing: Special gift boxes for holidays (Ramadan, Eid) may have limited-time pricing.
+
+1.3 Inventory Management
+Stock Tracking: Real-time inventory for each product variant. System prevents ordering out-of-stock items.
+
+Low Stock Alerts: When stock reaches threshold (configurable per product), admin receives notification.
+
+Backorder Handling: Option to allow pre-orders for out-of-stock popular items with estimated restock date.
+
+Perishable Goods Logic: Products approaching shelf life expiration flagged for priority sale or removal.
+
+2. DELIVERY & FULFILLMENT LOGIC
+2.1 Delivery Zones & Pricing
+Zone Definition: Geographic areas with standardized delivery fees and timelines.
+
+Zone 1 (Kairouan City): 3 DT fee, same-day delivery for orders before 2 PM.
+
+Zone 2 (Greater Kairouan): 5 DT fee, next-day delivery.
+
+Zone 3 (Tunis City): 7 DT fee, 1-2 day delivery.
+
+Zone 4 (Other Cities): 10-15 DT fee based on distance, 2-3 day delivery.
+
+Free Delivery Threshold: Orders over 50 DT qualify for free delivery in Zones 1-2; 80 DT for Zones 3-4.
+
+2.2 Pickup Options
+Store Pickup (Kairouan): Free, available 2 hours after order confirmation during store hours (24/7).
+
+Store Pickup (Tunis): Free, available next day during business hours.
+
+Pickup Time Selection: Customers select pickup date/time slot during checkout.
+
+2.3 Delivery Scheduling
+Time Slots: 3-hour windows (9-12, 12-15, 15-18, 18-21).
+
+Cut-off Times: Orders for same-day delivery must be placed before 2 PM.
+
+Blackout Dates: No delivery on national holidays (configurable in admin).
+
+Delivery Instructions: Customers can provide gate codes, building information, or special instructions.
+
+2.4 Delivery Personnel Workflow
+Order Batching: System groups deliveries by zone and time slot for efficient routing.
+
+Delivery Agent App (Future): Mobile interface for delivery personnel to view assignments, update statuses, and collect proof of delivery.
+
+3. ORDER PROCESSING & WORKFLOW
+3.1 Order Status Lifecycle
+text
+PENDING → CONFIRMED → PREPARING → READY → IN_TRANSIT → DELIVERED
+       ↘ CANCELLED (before PREPARING)
+       ↘ REFUNDED (after issues)
+PENDING: Order placed, payment pending (for future payment methods).
+
+CONFIRMED: Payment verified, order accepted by store.
+
+PREPARING: Kitchen preparing order (average 1-2 hours for standard orders).
+
+READY: Order packaged and ready for pickup/delivery.
+
+IN_TRANSIT: With delivery personnel en route.
+
+DELIVERED: Successfully delivered to customer.
+
+CANCELLED: Customer or store cancels before preparation.
+
+FAILED: Delivery attempted but failed (customer not available, wrong address).
+
+3.2 Automatic Account Creation Logic
+Trigger: Guest checkout completion with valid email.
+
+Account Creation: System creates user with:
+
+Email from order
+
+Name from order
+
+Phone from order
+
+Status: UNCLAIMED
+
+No password set
+
+Account Claim Process:
+
+System sends email with secure claim link (valid 7 days)
+
+User clicks link, sets password
+
+Account status changes to ACTIVE
+
+All guest orders linked to this account
+
+Duplicate Prevention: If email exists, order attaches to existing account (no new account created).
+
+3.3 Order Modification Rules
+Additions: Not allowed after order CONFIRMED.
+
+Cancellations: Allowed until status reaches PREPARING.
+
+Time Changes: Delivery/pickup time changes allowed up to 2 hours before scheduled time.
+
+Address Changes: Allowed until order status reaches PREPARING for delivery orders.
+
+4. VALIDATION RULES
+4.1 Customer Data Validation
+Email: Valid format, not disposable email domains.
+
+Phone: Tunisian format (+216 XX XXX XXX) or international format.
+
+Name: Minimum 2 characters, no special characters except hyphens and spaces.
+
+Address: Required for delivery, validated against known cities/postal codes.
+
+4.2 Order Validation
+Minimum Order Amount: 10 DT for delivery, no minimum for pickup.
+
+Maximum Order Amount: 500 DT (for fraud prevention, adjustable).
+
+Weight Limits: Maximum 5kg per delivery (safety limit for delivery personnel).
+
+Time Validation: Orders cannot be scheduled outside business hours.
+
+4.3 Product Configuration Validation
+Required Fields: Name (AR/FR), base price, category, at least one image.
+
+Price Validation: Base price must be positive, compare price must be higher than base price if set.
+
+Weight Validation: Variant weights must be positive numbers with valid units (g or kg).
+
+5. PAYMENT PROCESSING LOGIC
+5.1 Current Implementation (Phase 1)
+Cash on Delivery (COD): Primary method, available for all delivery zones.
+
+Store Pickup Payment: Pay at store upon pickup.
+
+No Online Payments: Initial phase focuses on trust-building with COD.
+
+5.2 Future Payment Methods (Phase 2+)
+Bank Transfer: Customers upload transfer receipt, manual verification by admin.
+
+Credit/Debit Cards: Integration with Tunisian payment gateway (CMI, etc.).
+
+Mobile Money: Flouci, D17, or other Tunisian mobile payment solutions.
+
+5.3 Payment Status Flow
+text
+PENDING → VERIFYING → COMPLETED
+       ↘ FAILED → RETRY/REFUND
+PENDING: Order placed, payment not yet received.
+
+VERIFYING: Payment received, being verified (for bank transfers).
+
+COMPLETED: Payment confirmed.
+
+FAILED: Payment issue (insufficient funds, fraud flag).
+
+6. CUSTOMER EXPERIENCE RULES
+6.1 Multilingual Content Rules
+Primary Language: Arabic (right-to-left layout).
+
+Secondary Languages: French, English (left-to-right).
+
+Content Priority:
+
+Arabic content always required
+
+French strongly recommended
+
+English optional
+
+Fallback Logic: If French/English content missing, display Arabic content with language indicator.
+
+6.2 Display Rules
+Price Display: Always shows in selected language's format with currency symbol.
+
+Weight Display: Shows metric units with language-appropriate labels ("جرام" / "grammes" / "grams").
+
+Date/Time Format: Respects language and regional preferences (Islamic calendar option for Arabic).
+
+6.3 Customer Communication Rules
+Order Confirmation: Sent via email immediately after order placement (all languages available).
+
+Status Updates: Email notifications at key status changes (CONFIRMED, PREPARING, IN_TRANSIT).
+
+Delivery Notification: SMS/WhatsApp notification 30 minutes before delivery (if phone provided).
+
+Marketing Communications: Only sent to customers who opt-in for newsletter.
+
+7. BUSINESS RULES FOR ADMIN
+7.1 Order Management Rules
+Preparation Time Calculation: System suggests preparation time based on:
+
+Order size (number of items)
+
+Current kitchen load (number of PREPARING orders)
+
+Time of day (peak vs. off-peak)
+
+Priority Orders: Marked for expedited processing (additional fee applicable).
+
+Bulk Order Handling: Orders over 2kg or 10 items flagged for extended preparation time.
+
+7.2 Inventory Reconciliation
+Daily Reconciliation: Suggested each morning between system inventory and physical stock.
+
+Waste Tracking: Option to mark inventory reduction due to spoilage/damage.
+
+Production Batches: Track batches for quality control and expiration tracking.
+
+7.3 Customer Management Rules
+Loyalty Tracking: Future system for repeat customers (discounts after 5 orders, etc.).
+
+Special Instructions Database: Store customer preferences (e.g., "less sweet", "extra honey").
+
+Blacklist Management: Option to block problematic customers (fraud, non-payment, harassment).
+
+8. ANALYTICS & REPORTING BUSINESS RULES
+8.1 Key Performance Indicators (KPIs)
+Daily/Weekly/Monthly Sales: Revenue, number of orders, average order value.
+
+Product Performance: Top-selling items, categories, profit margins.
+
+Customer Metrics: New vs. returning customers, acquisition channels.
+
+Delivery Performance: On-time delivery rate, zone performance, driver efficiency.
+
+Inventory Metrics: Turnover rate, waste percentage, stockout frequency.
+
+8.2 Report Generation Rules
+Automatic Reports: Daily sales summary emailed to admin each morning.
+
+Custom Date Ranges: Flexible reporting for any date range.
+
+Export Formats: CSV export for all reports for external analysis.
+
+Comparative Analysis: Compare periods (this week vs. last week, this month vs. same month last year).
+
+8.3 Business Intelligence Rules
+Demand Forecasting: Suggest inventory levels based on:
+
+Historical sales patterns
+
+Upcoming holidays/events
+
+Seasonality (Ramadan, Eid, wedding seasons)
+
+Pricing Optimization: Suggest price adjustments based on:
+
+Competitor pricing (manual input)
+
+Cost changes
+
+Demand elasticity
+
+Promotion Effectiveness: Track impact of discounts/offers on sales volume and revenue.
+
+9. SPECIAL CASES & EXCEPTION HANDLING
+9.1 Holiday & Peak Period Rules
+Ramadan/Eid Period:
+
+Extended preparation times (2-3x normal)
+
+Minimum order amounts may apply
+
+Advance ordering encouraged (7-day calendar)
+
+Special holiday packaging/gift options
+
+National Holidays: Modified hours, no delivery on major holidays.
+
+9.2 Weather & Emergency Conditions
+Extreme Weather Protocol: Option to pause deliveries for safety.
+
+Emergency Contact: Clear communication plan for unexpected closures.
+
+Customer Notification: Proactive alerts for delays/cancellations.
+
+9.3 Quality Issues & Complaints
+Refund/Replacement Policy:
+
+Quality issues: Full refund or replacement
+
+Late delivery: Partial refund (percentage based on delay)
+
+Wrong items: Replacement plus discount on next order
+
+Complaint Resolution Workflow: 24-hour response time target, escalation path for unresolved issues.
+
+10. BUSINESS RULES FOR SCALABILITY
+10.1 Multi-Store Inventory (Future)
+Stock Allocation: Distribute inventory between Kairouan and Tunis stores.
+
+Transfer Management: Track inter-store product transfers.
+
+Unified Catalog: Consistent products/prices across locations with location-specific availability.
+
+10.2 Wholesale/B2B Rules (Future)
+Wholesale Pricing: Tiered pricing for quantity purchases.
+
+Business Accounts: Separate registration, credit terms, dedicated contact.
+
+Custom Packaging: Business branding options for corporate gifts.
+
+10.3 Franchise Model Rules (Future)
+Brand Standards: Enforced product quality, packaging, pricing guidelines.
+
+Royalty Structure: Percentage of sales or fixed franchise fee.
+
+Territory Management: Exclusive geographic areas for franchisees.
+
+IMPLEMENTATION NOTES
+Configurability: All numeric values (delivery fees, minimum amounts, time windows) should be configurable via admin panel without code changes.
+
+Audit Trail: All business rule applications should be logged for troubleshooting and compliance.
+
+Exception Logging: When business rules prevent an action (e.g., order outside delivery hours), the specific rule violation should be clearly communicated to the user.
+
+Regional Compliance: All rules should consider Tunisian business regulations, consumer protection laws, and cultural norms.
+
+Seasonal Adjustments: Business rules should account for seasonal variations in demand, supply, and operational capacity.

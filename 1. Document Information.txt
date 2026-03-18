@@ -1,0 +1,97 @@
+1. Document Information
+Item	Detail
+Product Name	Makroudh Omrani E-commerce Platform
+Version	1.0 (Launch Version)
+Author	[Your Name/Team Name]
+Date Created	[Current Date]
+Last Updated	[Current Date]
+Status	In Review
+2. Executive Summary
+The Makroudh Omrani E-commerce Platform is a modern, full-stack website designed to transform a traditional Tunisian pastry shop's digital presence. Currently reliant on Facebook and phone orders, the business seeks to streamline sales, enhance customer experience, and build a scalable brand online.
+
+The platform serves local customers in Tunisia and the global diaspora, offering an intuitive way to browse and order authentic Makroudh. It features a powerful admin panel, giving the owners direct control over products, content, and analytics. Success means increased order volume, reduced operational friction, and establishing a premium digital storefront for a beloved traditional product.
+
+3. Problem Statement
+Problem: Makroudh Omrani's sales are constrained by a manual, fragmented process (Facebook messages, phone calls, WhatsApp). This leads to order errors, difficulty managing inventory/promotions, no customer account history, and an inability to serve non-local or international customers effectively.
+
+Who Experiences This: The store owners (order management headaches), customers (inconvenient ordering, lack of transparency), and potential customers outside immediate reach.
+
+Current Workaround: Using Facebook as a catalog and coordinating delivery via phone calls and messaging apps.
+
+Cost of Not Solving: Lost sales due to friction, inability to scale, stagnant growth, and vulnerability to competitors with modern online stores. Manual processes limit time for business development.
+
+4. Goals and Objectives
+4.1 Business Goals
+Increase online sales by 40% within 6 months of launch.
+
+Reduce order management time for owners by 50%.
+
+Expand customer base to serve the Tunisian diaspora within 12 months.
+
+Establish Makroudh Omrani as a leading digital brand for traditional Tunisian sweets.
+
+4.2 Product Goals
+Provide a seamless, 3-minute checkout from product discovery to order confirmation.
+
+Automatically create a customer profile upon first order to enable repeat business.
+
+Give administrators full real-time control over all site content and products.
+
+Deliver site performance exceeding a 90 Lighthouse score.
+
+4.3 Success Criteria (Measurable)
+Conversion: >15% of unique visitors to the shop page complete a purchase.
+
+Usability: Admin can add a new product with images via the CMS in under 2 minutes.
+
+Performance: Site achieves Core Web Vitals targets and loads in <2.5s on 3G.
+
+Adoption: 80% of orders shift from phone/Facebook to the website within 3 months.
+
+5. Target Audience
+5.1 Primary Users
+Local Tunisian Customers: Residents of Kairouan, Tunis, and other cities. Age 25-65. Comfortable with smartphones and online shopping (like via Facebook Marketplace). Seeks convenience and reliable delivery. Primary language: Arabic.
+
+Tunisian Diaspora: Living in Europe, North America, etc. Age 30-70. Tech-savvy. Seeks authentic taste from home to ship to themselves or as gifts to family in Tunisia. Languages: Arabic & French/English.
+
+5.2 Secondary Users
+Store Admin (Owner): Needs full oversight, analytics, and control. Not necessarily highly technical.
+
+Store Editor (Employee): Needs to update product status, view orders, and manage basic content.
+
+5.3 User Personas
+Persona 1: Amira, The Local Customer
+
+Role: Working professional in Tunis.
+
+Goal: Quickly order fresh Makroudh for a family gathering with clear delivery timing.
+
+Pain Point: Hesitant to call, forgets prices, wants to see what she's ordering.
+
+Tech Skill: Intermediate.
+
+Usage: Uses her smartphone to browse, select a 1kg box, and schedule evening delivery.
+
+Persona 2: Sami, The Diaspora Customer
+
+Role: Tunisian living in France.
+
+Goal: Send a traditional gift box to his parents in Sfax for Eid.
+
+Pain Point: Cannot find trustworthy online stores that ship authentic products within Tunisia.
+
+Tech Skill: Advanced.
+
+Usage: Uses desktop to read the "Our Story" page, chooses a luxury gift box, and enters his parents' Tunisian address for delivery.
+
+Persona 3: Mohamed, The Store Owner
+
+Role: Owner of Makroudh Omrani.
+
+Goal: Run his business efficiently, understand what's selling, and promote special events.
+
+Pain Point: Drowning in WhatsApp messages, can't track sales trends easily.
+
+Tech Skill: Basic.
+
+Usage: Logs into the admin dashboard daily to confirm new orders, check the analytics page for weekly bestsellers, and create a new "Ramadan Special" product collection.

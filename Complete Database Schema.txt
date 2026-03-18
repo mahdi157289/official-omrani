@@ -1,0 +1,943 @@
+// ============================================
+// DATABASE SCHEMA - Makroudh Omrani E-commerce
+// ============================================
+// Generated: 2024
+// Version: 1.0
+// Description: Complete Prisma schema for Makroudh Omrani e-commerce platform
+// ============================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// ENUM DEFINITIONS
+// ============================================
+
+enum UserRole {
+  CUSTOMER  // Regular customers
+  EDITOR    // Store employees - can manage products/content
+  ADMIN     // Store owner - full system access
+}
+
+enum UserStatus {
+  UNCLAIMED  // Account created via guest checkout, not yet activated
+  ACTIVE     // Active account
+  INACTIVE   // Deactivated account
+  SUSPENDED  // Temporarily suspended
+}
+
+enum OrderStatus {
+  PENDING           // Order placed, awaiting confirmation
+  CONFIRMED         // Order confirmed by store
+  PREPARING         // Being prepared in kitchen
+  READY_FOR_PICKUP  // Ready for customer pickup
+  OUT_FOR_DELIVERY  // On delivery route
+  DELIVERED         // Successfully delivered
+  CANCELLED         // Order cancelled
+  REFUNDED          // Order refunded
+}
+
+enum DeliveryType {
+  PICKUP_KAIROUAN  // Pickup from Kairouan store
+  PICKUP_TUNIS     // Pickup from Tunis store
+  DELIVERY         // Home/office delivery
+}
+
+enum PaymentMethod {
+  CASH_ON_DELIVERY  // Cash payment upon delivery
+  BANK_TRANSFER     // Bank transfer (future)
+  CARD              // Credit/debit card (future)
+}
+
+enum PaymentStatus {
+  PENDING     // Awaiting payment
+  PROCESSING  // Payment being processed
+  COMPLETED   // Payment successful
+  FAILED      // Payment failed
+  REFUNDED    // Payment refunded
+}
+
+enum ProductStatus {
+  DRAFT       // Not visible to customers
+  ACTIVE      // Available for purchase
+  OUT_OF_STOCK // Temporarily unavailable
+  ARCHIVED    // No longer sold
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
+  DOCUMENT
+}
+
+// ============================================
+// CORE MODELS
+// ============================================
+
+// ----------------------------
+// USER MANAGEMENT
+// ----------------------------
+
+model User {
+  // Primary fields
+  id              String      @id @default(cuid())
+  email           String      @unique
+  emailVerified   Boolean     @default(false)
+  phone           String?     @unique
+  phoneVerified   Boolean     @default(false)
+  
+  // Personal information
+  firstName       String?
+  lastName        String?
+  fullName        String?
+  dateOfBirth     DateTime?
+  
+  // Authentication
+  password        String?     // Nullable for UNCLAIMED users (guest checkout)
+  resetToken      String?     @unique
+  resetTokenExpiry DateTime?
+  
+  // Account status
+  role            UserRole    @default(CUSTOMER)
+  status          UserStatus  @default(ACTIVE)
+  
+  // Preferences
+  preferredLanguage String    @default("ar") // "ar", "fr", "en"
+  newsletterSubscribed Boolean @default(false)
+  
+  // Timestamps
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  lastLoginAt     DateTime?
+  
+  // Relations
+  addresses       Address[]
+  orders          Order[]
+  reviews         Review[]
+  wishlistItems   WishlistItem[]
+  
+  // Indexes
+  @@index([email])
+  @@index([phone])
+  @@index([status])
+  @@index([createdAt])
+  
+  @@map("users")
+}
+
+model Address {
+  id              String    @id @default(cuid())
+  
+  // User reference
+  userId          String
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Address details
+  label           String?   // "Home", "Work", etc.
+  recipientName   String
+  phone           String
+  streetAddress   String
+  city            String
+  state           String?
+  postalCode      String?
+  country         String    @default("Tunisia")
+  
+  // Location data (for delivery optimization)
+  latitude        Float?
+  longitude       Float?
+  
+  // Status
+  isDefault       Boolean   @default(false)
+  isActive        Boolean   @default(true)
+  
+  // Timestamps
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  // Indexes
+  @@index([userId])
+  @@index([userId, isDefault])
+  @@index([city])
+  
+  @@map("addresses")
+}
+
+// ----------------------------
+// PRODUCT CATALOG
+// ----------------------------
+
+model Product {
+  // Primary fields
+  id              String      @id @default(cuid())
+  sku             String      @unique  // Stock Keeping Unit (e.g., "MK-DAT-500")
+  slug            String      @unique  // URL-friendly identifier
+  
+  // Multilingual names
+  nameAr          String      // Arabic name
+  nameFr          String      // French name
+  nameEn          String?     // English name (optional)
+  
+  // Multilingual descriptions
+  descriptionAr   String      @db.Text
+  descriptionFr   String      @db.Text
+  descriptionEn   String?     @db.Text
+  
+  // Pricing
+  basePrice       Decimal     // Price per base unit (TND)
+  comparePrice    Decimal?    // Original price for discounts
+  costPrice       Decimal?    // Cost to store (for profit calculation)
+  
+  // Inventory
+  weightUnit      String      @default("g") // "g" or "kg"
+  stockQuantity   Int         @default(0)
+  lowStockThreshold Int       @default(10)
+  trackInventory  Boolean     @default(true)
+  
+  // Product details
+  ingredientsAr   String?     @db.Text
+  ingredientsFr   String?     @db.Text
+  shelfLifeDays   Int?        // Recommended shelf life
+  storageInstructionsAr String? @db.Text
+  storageInstructionsFr String? @db.Text
+  
+  // Status & visibility
+  status          ProductStatus @default(DRAFT)
+  isFeatured      Boolean     @default(false)
+  isBestSeller    Boolean     @default(false)
+  isNew           Boolean     @default(true)
+  
+  // SEO
+  metaTitleAr     String?
+  metaTitleFr     String?
+  metaDescriptionAr String?   @db.Text
+  metaDescriptionFr String?   @db.Text
+  keywords        String?     // Comma-separated keywords
+  
+  // Categories
+  categoryId      String
+  category        Category    @relation(fields: [categoryId], references: [id])
+  
+  // Relations
+  images          Media[]
+  variants        ProductVariant[]
+  orderItems      OrderItem[]
+  reviews         Review[]
+  wishlistItems   WishlistItem[]
+  
+  // Timestamps
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  publishedAt     DateTime?
+  
+  // Indexes
+  @@index([sku])
+  @@index([slug])
+  @@index([categoryId])
+  @@index([status])
+  @@index([isFeatured])
+  @@index([isBestSeller])
+  @@index([createdAt])
+  @@index([basePrice])
+  
+  @@map("products")
+}
+
+model ProductVariant {
+  id              String    @id @default(cuid())
+  
+  // Product reference
+  productId       String
+  product         Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  
+  // Variant details
+  nameAr          String    // e.g., "500 جرام", "صندوق هدايا"
+  nameFr          String    // e.g., "500 grammes", "Coffret cadeau"
+  sku             String    @unique  // Variant-specific SKU
+  weight          String    // e.g., "500g", "1kg", "2kg"
+  priceModifier   Decimal   @default(0) // Additional price for this variant
+  
+  // Inventory
+  stockQuantity   Int       @default(0)
+  
+  // Status
+  isActive        Boolean   @default(true)
+  
+  // Timestamps
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  // Indexes
+  @@index([productId])
+  @@index([sku])
+  @@index([weight])
+  
+  @@map("product_variants")
+}
+
+model Category {
+  id              String    @id @default(cuid())
+  
+  // Basic info
+  nameAr          String
+  nameFr          String
+  nameEn          String?
+  slug            String    @unique
+  descriptionAr   String?   @db.Text
+  descriptionFr   String?   @db.Text
+  
+  // Hierarchy
+  parentId        String?
+  parent          Category? @relation("CategoryToCategory", fields: [parentId], references: [id])
+  children        Category[] @relation("CategoryToCategory")
+  
+  // Display
+  imageId         String?
+  image           Media?    @relation(fields: [imageId], references: [id])
+  displayOrder    Int       @default(0)
+  
+  // Status
+  isActive        Boolean   @default(true)
+  isFeatured      Boolean   @default(false)
+  
+  // SEO
+  metaTitleAr     String?
+  metaTitleFr     String?
+  metaDescriptionAr String? @db.Text
+  metaDescriptionFr String? @db.Text
+  
+  // Relations
+  products        Product[]
+  
+  // Timestamps
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  // Indexes
+  @@index([slug])
+  @@index([parentId])
+  @@index([displayOrder])
+  @@index([isActive])
+  
+  @@map("categories")
+}
+
+// ----------------------------
+// MEDIA MANAGEMENT
+// ----------------------------
+
+model Media {
+  id              String    @id @default(cuid())
+  
+  // File information
+  fileName        String
+  fileSize        Int?      // Size in bytes
+  mimeType        String?
+  type            MediaType @default(IMAGE)
+  
+  // Cloudinary integration
+  cloudinaryId    String    // Cloudinary public_id
+  url             String    // Cloudinary URL
+  secureUrl       String    // HTTPS Cloudinary URL
+  format          String?   // "jpg", "png", "webp", etc.
+  width           Int?
+  height          Int?
+  
+  // Alt text for accessibility
+  altTextAr       String?
+  altTextFr       String?
+  altTextEn       String?
+  
+  // Usage tracking
+  usageCount      Int       @default(0)
+  
+  // Relations (polymorphic)
+  productId       String?
+  product         Product?  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  
+  categoryId      String?
+  category        Category? @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  
+  eventId         String?
+  event           Event?    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  
+  // Timestamps
+  uploadedAt      DateTime  @default(now())
+  
+  // Indexes
+  @@index([cloudinaryId])
+  @@index([productId])
+  @@index([type])
+  @@index([uploadedAt])
+  
+  @@map("media")
+}
+
+// ----------------------------
+// ORDER MANAGEMENT
+// ----------------------------
+
+model Order {
+  // Primary fields
+  id              String        @id @default(cuid())
+  orderNumber     String        @unique  // Format: MO-YYYYMMDD-XXXXX
+  
+  // Customer information
+  userId          String?
+  user            User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
+  customerName    String
+  customerEmail   String
+  customerPhone   String
+  
+  // Delivery information
+  deliveryType    DeliveryType
+  deliveryAddress String?
+  deliveryZone    String?       // For fee calculation
+  deliveryDate    DateTime?     // Scheduled delivery date
+  deliveryTimeSlot String?      // "9:00-12:00", "14:00-17:00", etc.
+  
+  // Payment information
+  paymentMethod   PaymentMethod @default(CASH_ON_DELIVERY)
+  paymentStatus   PaymentStatus @default(PENDING)
+  paymentReference String?      // Bank reference, transaction ID, etc.
+  
+  // Order details
+  subtotal        Decimal       // Sum of item prices
+  deliveryFee     Decimal       @default(0)
+  discountAmount  Decimal       @default(0)
+  taxAmount       Decimal       @default(0)
+  totalAmount     Decimal
+  
+  // Status tracking
+  status          OrderStatus   @default(PENDING)
+  statusHistory   Json?         // Array of {status, timestamp, note}
+  
+  // Notes
+  customerNotes   String?       @db.Text
+  internalNotes   String?       @db.Text
+  
+  // Relations
+  items           OrderItem[]
+  
+  // Timestamps
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  confirmedAt     DateTime?
+  preparedAt      DateTime?
+  deliveredAt     DateTime?
+  cancelledAt     DateTime?
+  
+  // Indexes
+  @@index([orderNumber])
+  @@index([userId])
+  @@index([customerEmail])
+  @@index([customerPhone])
+  @@index([status])
+  @@index([createdAt])
+  @@index([deliveryDate])
+  @@index([paymentStatus])
+  
+  @@map("orders")
+}
+
+model OrderItem {
+  id              String  @id @default(cuid())
+  
+  // Order reference
+  orderId         String
+  order           Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  
+  // Product reference
+  productId       String
+  product         Product @relation(fields: [productId], references: [id])
+  
+  // Variant information
+  variantId       String?
+  variant         ProductVariant? @relation(fields: [variantId], references: [id])
+  variantNameAr   String?
+  variantNameFr   String?
+  
+  // Item details
+  quantity        Int
+  unitPrice       Decimal     // Price at time of purchase
+  weight          String?     // Selected weight
+  
+  // Calculations
+  totalPrice      Decimal     // unitPrice * quantity
+  
+  // Indexes
+  @@index([orderId])
+  @@index([productId])
+  
+  @@map("order_items")
+}
+
+// ----------------------------
+// EVENTS & PROMOTIONS
+// ----------------------------
+
+model Event {
+  id              String    @id @default(cuid())
+  
+  // Basic info
+  titleAr         String
+  titleFr         String
+  slug            String    @unique
+  descriptionAr   String    @db.Text
+  descriptionFr   String    @db.Text
+  
+  // Timing
+  startDate       DateTime
+  endDate         DateTime?
+  isAllDay        Boolean   @default(false)
+  
+  // Display
+  imageId         String?
+  image           Media?    @relation(fields: [imageId], references: [id])
+  backgroundColor String?   // For calendar display
+  textColor       String?   // For calendar display
+  
+  // Status
+  isActive        Boolean   @default(true)
+  isFeatured      Boolean   @default(false)
+  
+  // Location (for physical events)
+  locationAr      String?
+  locationFr      String?
+  address         String?
+  
+  // Relations
+  products        Product[] @relation("EventProducts")
+  
+  // Timestamps
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  publishedAt     DateTime?
+  
+  // Indexes
+  @@index([slug])
+  @@index([startDate])
+  @@index([endDate])
+  @@index([isActive])
+  @@index([isFeatured])
+  
+  @@map("events")
+}
+
+// ----------------------------
+// USER ENGAGEMENT
+// ----------------------------
+
+model Review {
+  id              String    @id @default(cuid())
+  
+  // References
+  productId       String
+  product         Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  userId          String
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  orderId         String?   // Link to purchase order
+  order           Order?    @relation(fields: [orderId], references: [id])
+  
+  // Review content
+  rating          Int       // 1-5 stars
+  titleAr         String?
+  titleFr         String?
+  commentAr       String?   @db.Text
+  commentFr       String?   @db.Text
+  
+  // Moderation
+  isApproved      Boolean   @default(false)
+  isFeatured      Boolean   @default(false)
+  moderatorNotes  String?   @db.Text
+  
+  // Helpfulness
+  helpfulCount    Int       @default(0)
+  notHelpfulCount Int       @default(0)
+  
+  // Timestamps
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  // Indexes
+  @@index([productId])
+  @@index([userId])
+  @@index([rating])
+  @@index([isApproved])
+  @@index([createdAt])
+  
+  @@map("reviews")
+}
+
+model WishlistItem {
+  id              String    @id @default(cuid())
+  
+  // References
+  userId          String
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId       String
+  product         Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  
+  // Notes
+  notes           String?   @db.Text
+  
+  // Timestamps
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  // Constraints (composite unique)
+  @@unique([userId, productId])
+  
+  // Indexes
+  @@index([userId])
+  @@index([productId])
+  
+  @@map("wishlist_items")
+}
+
+// ----------------------------
+// SITE CONFIGURATION
+// ----------------------------
+
+model SiteConfig {
+  id              String    @id @default(cuid())
+  
+  // Config identification
+  key             String    @unique
+  group           String    @default("general") // "general", "delivery", "payment", "seo", "social"
+  
+  // Value storage
+  value           Json?     // Can be string, number, boolean, array, or object
+  valueType       String    @default("string") // "string", "number", "boolean", "array", "object"
+  
+  // Metadata
+  labelAr         String?
+  labelFr         String?
+  descriptionAr   String?   @db.Text
+  descriptionFr   String?   @db.Text
+  isPublic        Boolean   @default(false)   // Expose via API?
+  
+  // Validation
+  validationRules String?   // JSON validation rules
+  options         Json?     // For select/dropdown fields
+  
+  // Audit
+  updatedBy       String?
+  updatedAt       DateTime  @updatedAt
+  
+  // Indexes
+  @@index([key])
+  @@index([group])
+  
+  @@map("site_config")
+}
+
+model DeliveryZone {
+  id              String    @id @default(cuid())
+  
+  // Zone definition
+  nameAr          String
+  nameFr          String
+  postalCodes     String[]  // Array of postal codes
+  cities          String[]  // Array of city names
+  
+  // Pricing
+  deliveryFee     Decimal
+  minOrderAmount  Decimal?  // Minimum for free delivery
+  freeDeliveryThreshold Decimal?
+  
+  // Timing
+  estimatedMinDays Int      @default(1)
+  estimatedMaxDays Int      @default(3)
+  deliveryDays    String[]  // ["monday", "tuesday", ...]
+  cutOffTime      String?   // "16:00" - orders after this time deliver next day
+  
+  // Status
+  isActive        Boolean   @default(true)
+  
+  // Timestamps
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  // Indexes
+  @@index([nameAr])
+  @@index([isActive])
+  
+  @@map("delivery_zones")
+}
+
+// ----------------------------
+// ANALYTICS & LOGGING
+// ----------------------------
+
+model PageView {
+  id              String    @id @default(cuid())
+  
+  // Visitor information
+  sessionId       String
+  visitorId       String?   // Anonymous or logged-in user ID
+  userAgent       String?
+  ipAddress       String?
+  
+  // Page information
+  url             String
+  path            String
+  queryParams     Json?
+  referrer        String?
+  
+  // Engagement
+  timeOnPage      Int?      // Seconds
+  scrollDepth     Float?    // Percentage 0-100
+  
+  // Device information
+  deviceType      String?   // "desktop", "mobile", "tablet"
+  browser         String?
+  os              String?
+  screenResolution String?
+  
+  // Location
+  country         String?
+  city            String?
+  
+  // Timestamps
+  viewedAt        DateTime  @default(now())
+  
+  // Indexes
+  @@index([sessionId])
+  @@index([visitorId])
+  @@index([path])
+  @@index([viewedAt])
+  @@index([country])
+  
+  @@map("page_views")
+}
+
+model ActivityLog {
+  id              String    @id @default(cuid())
+  
+  // Actor information
+  userId          String?
+  user            User?     @relation(fields: [userId], references: [id])
+  userRole        UserRole?
+  ipAddress       String?
+  
+  // Activity details
+  action          String    // "create", "update", "delete", "login", "logout"
+  entityType      String    // "Product", "Order", "User", etc.
+  entityId        String?
+  entityName      String?
+  
+  // Changes
+  oldValues       Json?
+  newValues       Json?
+  changes         Json?     // Diff between old and new
+  
+  // Metadata
+  descriptionAr   String?
+  descriptionFr   String?
+  
+  // Timestamps
+  performedAt     DateTime  @default(now())
+  
+  // Indexes
+  @@index([userId])
+  @@index([action])
+  @@index([entityType])
+  @@index([entityId])
+  @@index([performedAt])
+  
+  @@map("activity_logs")
+}
+
+// ============================================
+// RELATIONSHIP NOTES
+// ============================================
+
+/*
+KEY RELATIONSHIPS:
+
+1. User System:
+   User (1) → Addresses (N)
+   User (1) → Orders (N)
+   User (1) → Reviews (N)
+   User (1) → WishlistItems (N)
+
+2. Product System:
+   Category (1) → Products (N)
+   Product (1) → ProductVariants (N)
+   Product (1) → Media (N) [images]
+   Product (1) → OrderItems (N)
+   Product (1) → Reviews (N)
+
+3. Order System:
+   Order (1) → OrderItems (N)
+   OrderItem (1) → Product (1)
+   OrderItem (1) → ProductVariant (0..1)
+
+4. Event System:
+   Event (1) → Media (0..1) [featured image]
+   Event (N) → Products (N) [many-to-many via relation table]
+
+5. Media System (Polymorphic):
+   Media can belong to:
+     - Product (productId)
+     - Category (categoryId)
+     - Event (eventId)
+*/
+
+// ============================================
+// DATABASE MIGRATION INSTRUCTIONS
+// ============================================
+
+/*
+1. INITIAL SETUP:
+   - Create a new PostgreSQL database
+   - Set DATABASE_URL in your .env file
+   - Run: npx prisma migrate dev --name init
+
+2. SEEDING THE DATABASE:
+   Create a seed script (prisma/seed.ts) that:
+   - Creates initial admin user
+   - Creates default categories
+   - Creates delivery zones
+   - Creates essential site configs
+
+3. REGULAR MAINTENANCE:
+   - Always create new migrations: npx prisma migrate dev --name [description]
+   - Reset dev database: npx prisma migrate reset
+   - Generate Prisma Client: npx prisma generate
+*/
+
+// ============================================
+// EXAMPLE QUERIES
+// ============================================
+
+/*
+// 1. Get featured products with images
+const featuredProducts = await prisma.product.findMany({
+  where: { 
+    isFeatured: true,
+    status: "ACTIVE"
+  },
+  include: {
+    images: true,
+    category: true
+  },
+  orderBy: { createdAt: "desc" },
+  take: 10
+});
+
+// 2. Get user's order history
+const userOrders = await prisma.order.findMany({
+  where: { userId: "user_id_here" },
+  include: {
+    items: {
+      include: {
+        product: {
+          include: { images: true }
+        },
+        variant: true
+      }
+    }
+  },
+  orderBy: { createdAt: "desc" }
+});
+
+// 3. Get sales analytics for dashboard
+const salesData = await prisma.order.groupBy({
+  by: ["status", "createdAt"],
+  where: {
+    createdAt: {
+      gte: startDate,
+      lte: endDate
+    }
+  },
+  _count: { id: true },
+  _sum: { totalAmount: true }
+});
+
+// 4. Get products for a specific category
+const categoryProducts = await prisma.product.findMany({
+  where: {
+    categoryId: "category_id_here",
+    status: "ACTIVE"
+  },
+  include: {
+    images: true,
+    variants: {
+      where: { isActive: true }
+    }
+  }
+});
+*/
+# Database Schema - Summary & Usage Guide
+
+## 🗃️ Models Overview
+
+| Model | Purpose | Key Features |
+|-------|---------|--------------|
+| **User** | Customer & admin accounts | Multi-role system, guest checkout support, multilingual preferences |
+| **Address** | Delivery addresses | Default address flag, geolocation support, multi-address per user |
+| **Product** | Product catalog | Full multilingual support, inventory tracking, SEO fields |
+| **ProductVariant** | Product variations (weights/sizes) | Weight-based pricing, separate inventory tracking |
+| **Category** | Product categorization | Hierarchical categories, featured categories |
+| **Media** | Images & files | Cloudinary integration, polymorphic relations |
+| **Order** | Customer orders | Comprehensive status tracking, delivery scheduling |
+| **OrderItem** | Items within orders | Price snapshot, variant linking |
+| **Event** | Promotions & events | Date-based, product associations |
+| **Review** | Product reviews | Rating system, moderation flags |
+| **WishlistItem** | Customer wishlists | User-product unique constraint |
+| **SiteConfig** | Dynamic configuration | JSON-based flexible values, multilingual labels |
+| **DeliveryZone** | Delivery areas | Zone-based pricing, scheduling rules |
+| **PageView** | Analytics tracking | Visitor behavior, device detection |
+| **ActivityLog** | Admin activity audit | Change tracking, user action logging |
+
+## 🔗 Key Relationships
+
+### 1-to-Many Relationships:
+- **User → Addresses** (One user, multiple addresses)
+- **User → Orders** (One user, multiple orders)
+- **Category → Products** (One category, multiple products)
+- **Product → Variants** (One product, multiple weight variants)
+- **Order → OrderItems** (One order, multiple items)
+
+### Polymorphic Media:
+Media files can be attached to:
+- Products (product images)
+- Categories (category images)
+- Events (event banners)
+
+### Many-to-Many:
+- **Events ↔ Products** (Events can feature multiple products)
+
+## 📊 Analytics & Reporting
+
+The schema supports comprehensive analytics:
+
+1. **Sales Analytics**: Order status tracking, revenue calculation
+2. **User Analytics**: Page views, session tracking
+3. **Inventory Analytics**: Stock levels, best sellers
+4. **Activity Auditing**: Admin change logging
+
+## ⚙️ Migration Commands
+
+```bash
+# Initialize database
+npx prisma migrate dev --name init
+
+# Create new migration
+npx prisma migrate dev --name add_feature_name
+
+# Reset database (development)
+npx prisma migrate reset
+
+# Generate Prisma Client
+npx prisma generate
+
+# Seed database
+npm run db:seed

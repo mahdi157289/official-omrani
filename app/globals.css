@@ -1,0 +1,110 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-inter: 'Inter', system-ui, sans-serif;
+  --font-cairo: 'Cairo', sans-serif;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-text-primary;
+    font-family: var(--font-lato);
+  }
+
+  [dir="rtl"] body {
+    font-family: var(--font-amiri);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-playfair);
+  }
+
+  [dir="rtl"] h1,
+  [dir="rtl"] h2,
+  [dir="rtl"] h3,
+  [dir="rtl"] h4,
+  [dir="rtl"] h5,
+  [dir="rtl"] h6 {
+    font-family: var(--font-amiri);
+  }
+}
+
+@layer utilities {
+  .font-arabic {
+    font-family: var(--font-amiri);
+  }
+
+  .font-sans {
+    font-family: var(--font-lato);
+  }
+
+  .font-serif {
+    font-family: var(--font-playfair);
+  }
+
+  @keyframes scroll-y {
+    from {
+      background-position: center 0px;
+    }
+
+    to {
+      background-position: center 48px;
+    }
+  }
+
+  .animate-scroll-y {
+    animation: scroll-y 4s linear infinite;
+  }
+
+  .gold-border {
+    border: 1px solid #D4AF37;
+  }
+
+  .glare-effect {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .glare-effect::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg,
+        transparent 0%,
+        rgba(255, 215, 0, 0) 45%,
+        rgba(255, 215, 0, 0.4) 50%,
+        rgba(255, 215, 0, 0) 55%,
+        transparent 100%);
+    transform: rotate(45deg);
+    animation: glare 4s infinite;
+    pointer-events: none;
+  }
+
+  @keyframes glare {
+    0% {
+      transform: rotate(45deg) translate(-100%, -100%);
+    }
+
+    20% {
+      transform: rotate(45deg) translate(100%, 100%);
+    }
+
+    100% {
+      transform: rotate(45deg) translate(100%, 100%);
+    }
+  }
+}

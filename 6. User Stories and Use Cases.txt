@@ -1,0 +1,507 @@
+6. User Stories and Use Cases
+6.1 User Stories
+As a First-time Customer,
+I want to place an order without creating an account,
+so that I can complete my purchase as quickly as possible.
+
+As a First-time Customer who just placed an order,
+I want to receive an email to claim my automatically created account,
+so that I can view my order status and save my details for next time.
+
+As a Returning Customer,
+I want to log into my profile to see my order history and update my personal info,
+so that I can re-order easily and manage my data.
+
+As a Customer,
+I want to switch the website language between Arabic, French, and English via a clear button,
+so that I can browse comfortably in my preferred language.
+
+As the Store Admin (Owner),
+I want to view an analytics dashboard with sales trends and popular products,
+so that I can make informed business decisions.
+
+As a Store Editor (Employee),
+I want to update product images and mark items as "sold out",
+so that the website is always accurate without needing the owner.
+
+As any User,
+I want to see a pleasant, branded loading screen when the site is fetching data,
+so that I know the site is working and not broken.
+
+6.2 Use Cases
+Use Case ID: UC-01
+Title: Guest Checkout with Automatic Account Creation
+Actor: First-time Customer
+Preconditions: Customer has items in their cart.
+Main Flow:
+
+Customer proceeds to checkout.
+
+Customer fills the order form (name, email, phone, delivery address).
+
+System validates data and places the order.
+
+System checks if a user with that email exists.
+
+If not, system creates a User record with the provided details and a null password.
+
+System generates a secure account claim token and emails it to the customer.
+
+Customer receives order confirmation and a separate email to set their password and claim their account.
+Alternative Flows:
+
+5a. If the email exists, the order is attached to the existing account.
+Postconditions: An order is created. A new user account is created in an "unclaimed" state.
+
+Use Case ID: UC-02
+Title: Admin Views Real-Time Sales Dashboard
+Actor: Store Admin
+Preconditions: Admin is logged into the secure /admin panel.
+Main Flow:
+
+Admin navigates to the "Analytics" tab in the right-side navigation bar.
+
+System displays a dashboard with key widgets: Sales chart (time-based), Top Products table, Order Status summary, and Customer Acquisition metrics.
+
+Admin can adjust the date range (e.g., last 7 days, this month).
+
+Data updates in real-time as new orders come in.
+Postconditions: Admin gains insights into business performance.
+
+7. Functional Requirements
+7.1 Feature List (Priority Defined)
+Feature ID	Feature Name	Description	Priority	Key Acceptance Criteria
+FR-01	Multi-language Storefront	Full RTL support for Arabic, with toggle to FR/EN.	Must-Have	Language bubble selector on right. Text across all pages translates correctly.
+FR-02	Guest Checkout & Auto-Account	Order without account; system creates account from form data.	Must-Have	Order creates User record. Claim account email is sent. User can later log in.
+FR-03	User Profile & Order History	Logged-in users can view past orders and edit personal info.	Must-Have	Profile page shows order list. Changes to phone/address are saved.
+FR-04	Admin CMS with Real-Time Update	Payload CMS panel for managing all content. Changes reflect live immediately.	Must-Have	Admin adds product, publishes, and sees it on live site without manual refresh.
+FR-05	Admin Analytics Dashboard	Dashboard showing sales, product performance, and customer data.	Must-Have	Charts and graphs render with real data. Date filter works.
+FR-06	Enhanced Loading UX	Branded initial loader and skeleton screens for all async data.	Must-Have	Initial load shows black screen with "Makroudh Omrani..." loader. Pages show skeletons before content.
+FR-07	Cloudinary Media with Preset	All images optimized via a pre-configured Cloudinary upload preset.	Must-Have	Images uploaded via admin are automatically formatted, compressed, and served via CDN.
+7.2 Core Features (Must-Have) - Detailed
+FR-02: Guest Checkout & Auto-Account
+
+Logic: The Order creation API endpoint will contain logic to check for an existing user by email. If none, it creates one with a status: "UNCLAIMED". A background job sends the claim email.
+
+Data Fields Collected: Full Name, Email, Phone Number, Delivery Address, Delivery Type.
+
+FR-04: Admin CMS with Real-Time Update
+
+Implementation: Leverages Next.js's revalidatePath or On-Demand Revalidation. The Payload CMS afterChange hook will trigger a revalidation call to the relevant frontend API route.
+
+Admin Nav: The Payload CMS admin interface will be configured to have its main navigation sidebar positioned on the right side of the screen.
+
+7.3 Secondary Features (Should-Have)
+Product wishlist functionality.
+
+Customer review and rating system for products.
+
+Advanced analytics: Customer lifetime value, repeat purchase rate.
+
+7.4 Future Features (Nice-to-Have)
+Integration with local Tunisian payment gateways (e.g., CMI).
+
+SMS notifications for order status updates.
+
+Advanced gift box customization by customers.
+
+8. Non-Functional Requirements
+8.1 Performance
+Load Time: Largest Contentful Paint (LCP) < 2.5 seconds on a 3G connection.
+
+Response Time: Server API responses within 200ms for 95% of requests.
+
+Concurrent Users: Support for 50 concurrent users browsing and 10 concurrent checkout processes.
+
+8.2 Security
+Authentication: NextAuth.js for admin. User passwords hashed with bcryptjs.
+
+Data: All sensitive data (PII, credentials) encrypted at rest. HTTPS enforced.
+
+Admin Panel: Access restricted by IP whitelist (optional but recommended).
+
+Compliance: Basic GDPR principles followed (data collection consent, right to erasure).
+
+8.3 Scalability
+Expected Growth: Database schema supports 10,000 products and 100,000 orders.
+
+Infrastructure: Stateless application design on Render.com allows for easy horizontal scaling if needed.
+
+8.4 Accessibility
+WCAG: Target Level AA compliance.
+
+Screen Reader: All images have proper alt text (managed in both Arabic and French via CMS).
+
+Keyboard: Full navigability using keyboard tab and enter keys.
+
+RTL: Full and correct support for Right-to-Left reading, including form labels and UI margins/padding.
+
+8.5 Compatibility
+Browsers: Latest versions of Chrome, Firefox, Safari, Edge.
+
+Devices: Mobile-first, responsive on all screen sizes.
+
+OS: iOS, Android, Windows, macOS.
+
+Minimum Resolution: 320px width (mobile).
+
+9. Technical Specifications
+9.1 Tech Stack
+Frontend: Next.js 15 (App Router), React 19, TypeScript.
+
+Styling: Tailwind CSS, shadcn/ui component library.
+
+Internationalization: next-intl.
+
+Backend/Fullstack: Next.js API Routes, Payload CMS (self-hosted).
+
+Database & ORM: PostgreSQL (on Render), Prisma.
+
+Authentication: NextAuth.js (Auth.js).
+
+Media Storage & CDN: Cloudinary (with configured upload presets).
+
+Deployment: Render.com (Web Service + PostgreSQL database).
+
+Animation: Framer Motion for interactive micro-animations.
+
+9.2 Architecture Overview
+System: Monolithic Next.js application containing frontend, backend API, and admin CMS.
+
+Data Flow:
+
+User visits site (Vercel edge network).
+
+Next.js renders page (SSR/SSG), fetching data via Prisma from PostgreSQL (Render).
+
+User action (e.g., add to cart) hits Next.js API route.
+
+API route uses Prisma to mutate data.
+
+Admin publishes change in Payload CMS.
+
+Payload hook calls Next.js revalidation endpoint.
+
+Updated content is served on next request.
+
+API Structure: RESTful conventions within Next.js App Router API routes.
+
+9.3 Complete Database Schema (Prisma)
+This schema defines all data structures and their relationships.
+
+prisma
+// ========== ENUMS ==========
+enum UserRole {
+  CUSTOMER
+  EDITOR
+  ADMIN
+}
+
+enum UserStatus {
+  UNCLAIMED  // Account created via guest checkout, not yet activated
+  ACTIVE
+  INACTIVE
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PREPARING
+  READY_FOR_PICKUP
+  OUT_FOR_DELIVERY
+  DELIVERED
+  CANCELLED
+}
+
+enum DeliveryType {
+  PICKUP_KAIROUAN
+  PICKUP_TUNIS
+  DELIVERY
+}
+
+// ========== MAIN TABLES ==========
+
+model User {
+  id            String      @id @default(cuid())
+  email         String      @unique
+  name          String?
+  phone         String?
+  password      String?     // Nullable for UNCLAIMED users
+  role          UserRole    @default(CUSTOMER)
+  status        UserStatus  @default(ACTIVE)
+  addresses     Address[]
+  orders        Order[]
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@map("users")
+}
+
+model Address {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  label       String?  // e.g., "Home", "Work"
+  fullAddress String
+  city        String
+  postalCode  String?
+  isDefault   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  @@map("addresses")
+}
+
+model Product {
+  id            String   @id @default(cuid())
+  sku           String   @unique
+  nameFr        String
+  nameAr        String
+  slug          String   @unique
+  descriptionFr String   @db.Text
+  descriptionAr String   @db.Text
+  basePrice     Decimal  // Price per base unit (e.g., per 100g)
+  weightUnit    String   @default("g") // "g" or "kg"
+  isActive      Boolean  @default(true)
+  isFeatured    Boolean  @default(false)
+  categoryId    String
+  category      Category @relation(fields: [categoryId], references: [id])
+  images        Media[]
+  orderItems    OrderItem[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("products")
+}
+
+model Category {
+  id            String    @id @default(cuid())
+  nameFr        String
+  nameAr        String
+  slug          String    @unique
+  descriptionFr String?   @db.Text
+  descriptionAr String?   @db.Text
+  isActive      Boolean   @default(true)
+  products      Product[]
+  createdAt     DateTime  @default(now())
+
+  @@map("categories")
+}
+
+model Media {
+  id           String   @id @default(cuid())
+  url          String   // Cloudinary URL
+  cloudinaryId String   // Cloudinary public_id
+  altTextFr    String?
+  altTextAr    String?
+  width        Int?
+  height       Int?
+  productId    String?
+  product      Product? @relation(fields: [productId], references: [id], onDelete: Cascade)
+  eventId      String?
+  event        Event?   @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@map("media")
+}
+
+model Event {
+  id            String   @id @default(cuid())
+  titleFr       String
+  titleAr       String
+  slug          String   @unique
+  startDate     DateTime
+  endDate       DateTime?
+  descriptionFr String   @db.Text
+  descriptionAr String   @db.Text
+  isActive      Boolean  @default(true)
+  imageId       String?
+  image         Media?   @relation(fields: [imageId], references: [id])
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("events")
+}
+
+model Order {
+  id              String      @id @default(cuid())
+  orderNumber     String      @unique // Format: MO-YYYY-MM-XXXXX
+  userId          String?     // Nullable for pure guest orders (optional link)
+  user            User?       @relation(fields: [userId], references: [id])
+  customerName    String
+  customerEmail   String
+  customerPhone   String
+  deliveryType    DeliveryType
+  deliveryAddress String?     // Full address string for delivery
+  deliveryZone    String?     // For fee calculation
+  specialInstructions String? @db.Text
+  subtotal        Decimal
+  deliveryFee     Decimal
+  totalAmount     Decimal
+  status          OrderStatus @default(PENDING)
+  items           OrderItem[]
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id            String  @id @default(cuid())
+  orderId       String
+  order         Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId     String
+  product       Product @relation(fields: [productId], references: [id])
+  quantity      Int
+  unitPrice     Decimal // Snapshot of price at order time
+  selectedWeight String // e.g., "500g"
+
+  @@map("order_items")
+}
+
+// ========== SYSTEM & CONFIGURATION ==========
+
+model SiteConfig {
+  id          String   @id @default(cuid())
+  key         String   @unique // e.g., "delivery_zones", "contact_phone"
+  value       Json     // Flexible JSON structure for config data
+  updatedAt   DateTime @updatedAt
+  updatedBy   String?
+
+  @@map("site_config")
+}
+9.4 Complete API Endpoints
+All backend functionality is exposed through these Next.js API Routes.
+
+Category	Method	Endpoint	Description	Auth	Request Body (Example)
+Auth	POST	/api/auth/register	Manual user registration	No	{email, password, name}
+POST	/api/auth/login	Login (Email/Password)	No	{email, password}
+POST	/api/auth/claim	Claim guest account	No	{token, password}
+GET	/api/auth/session	Get current session	Yes	-
+POST	/api/auth/logout	Logout	Yes	-
+Products	GET	/api/products	List products (with filters)	No	-
+GET	/api/products/[slug]	Get single product	No	-
+GET	/api/categories	List categories	No	-
+Cart	GET	/api/cart	Get cart contents	No*	-
+POST	/api/cart/add	Add item to cart	No*	{productId, selectedWeight}
+PUT	/api/cart/update	Update item quantity	No*	{itemId, quantity}
+DELETE	/api/cart/remove	Remove item	No*	{itemId}
+Checkout	POST	/api/checkout/session	Init checkout, calc fees	No	{cart, deliveryType, zone}
+POST	/api/checkout/order	Place final order	No	{customerDetails, cart, total}
+User	GET	/api/user/profile	Get user profile & orders	Yes	-
+PUT	/api/user/profile	Update profile	Yes	{name, phone}
+GET	/api/user/addresses	List saved addresses	Yes	-
+POST	/api/user/addresses	Add new address	Yes	{label, fullAddress...}
+Admin	GET	/api/admin/orders	List/filter orders	Admin	-
+PUT	/api/admin/orders/[id]	Update order status	Admin	{status}
+GET	/api/admin/analytics	Get dashboard data	Admin	-
+POST	/api/admin/revalidate	Trigger site rebuild	Secret	{secret, path}
+Public	GET	/api/events	List active events	No	-
+GET	/api/config	Get public config	No	-
+** Cart endpoints use browser session or localStorage token.
+
+9.2 Detailed System Architecture
+The platform follows a modern, monolithic full-stack architecture using Next.js, optimized for performance and developer experience.
+
+Data Flow Explanation:
+
+Static & Dynamic Rendering:
+
+Public pages (Home, Story, Events) are Statically Generated (SSG) at build time for instant loads.
+
+Product listings and detail pages use Incremental Static Regeneration (ISR) or Server-Side Rendering (SSR) to stay fresh.
+
+User Interactions:
+
+Browsing: Fetches data from the database via Prisma in API routes or server components.
+
+Adding to Cart: Hits /api/cart/add, which manages state in the user's session or localStorage.
+
+Checkout: /api/checkout/session calculates fees. /api/checkout/order creates the Order and OrderItem records, and potentially a User.
+
+Admin Operations:
+
+The Payload CMS Admin (/admin) provides a direct UI to manage all database tables.
+
+When an admin publishes a change, a Payload afterChange hook calls the secured /api/admin/revalidate endpoint.
+
+This triggers Next.js to revalidate the affected pages, making updates live instantly.
+
+Media Flow:
+
+Admins upload images within Payload CMS.
+
+Payload uses the Cloudinary upload preset to send files directly to Cloudinary.
+
+Cloudinary returns an optimized URL, which Payload saves in the Media table.
+
+The frontend displays images via Cloudinary's CDN with automatic format/quality optimization.
+
+Authentication Layer:
+
+NextAuth.js wraps admin API routes and pages. Users logging into /admin are validated against the User table (with role: ADMIN/EDITOR).
+
+Customer profile routes (/api/user/*) are also protected, allowing users to manage their own data.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+10. User Interface and Design
+10.1 Design Principles
+Visual Style: Authentic & Premium. Evokes traditional craftsmanship through warm colors and food imagery, combined with a clean, modern layout that feels trustworthy.
+
+Brand Guidelines: Heritage, Quality, Warmth, Convenience.
+
+10.2 Color Palette
+Primary: Deep Brown-Red (#A52A2A) – extracted from Facebook branding.
+
+Secondary: Gold (#DAA520) – for accents, buttons, highlights.
+
+Background: Cream (#FFF8DC) for main background, pure white (#FFFFFF) for cards.
+
+Text: Dark Charcoal (#2F4F4F) for primary text, softer gray (#696969) for secondary.
+
+Loader Background: Pure Black (#000000).
+
+10.3 Typography
+Primary Arabic Font: Cairo. Variable weight preferred. Used for all Arabic UI.
+
+Secondary Latin Font: Inter. Used for French and English text.
+
+Fallback: system-ui stack.
+
+Implementation: Served via Google Fonts with display=swap.
+
+10.4 Component Library
+Built with: shadcn/ui, extended with custom styles matching the color palette.
+
+Key Custom Components: ProductCard, CartDrawer, LanguageSwitcher (bubble), AdminSidebar (right-aligned), LoadingScreen (full-page black with incremental text/animation).
+
+10.5 Page/Screen List (Key Examples)
+Screen Name: Initial Loading Screen
+
+Purpose: Displayed during initial app hydration and page transitions.
+
+Key Elements: Black full-screen background. Centered, elegant loader animation with the text "Makroudh Omrani..." possibly with a progress bar or incremental dots.
+
+User Actions: Wait.
+
+Navigation: Replaced by requested page once ready.
+
+Screen Name: Product Detail Page
+
+Purpose: Allow customer to view product and add to cart.
+
+Key Elements: Image gallery, product title/description (i18n), weight selector, price, add-to-cart button.
+
+User Actions: Select weight, add to cart.
+
+Navigation: To Cart or continue shopping.
