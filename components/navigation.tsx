@@ -119,6 +119,16 @@ export function Navigation() {
   };
 
 
+  // Secure hydration guard
+  if (!isMounted) {
+    return (
+      <nav 
+        className="fixed top-4 left-0 right-0 z-50 bg-[#437983] w-[88%] max-w-6xl mx-auto h-28 rounded-3xl border border-white/10 shadow-2xl"
+        style={{ backgroundColor: '#437983' }}
+      />
+    );
+  }
+
   return (
     <>
       {/* Sticky Social Icons - Desktop */}
@@ -157,28 +167,32 @@ export function Navigation() {
       >
         {/* Hanging 3D Objects */}
         <div
-          className={`absolute top-0 left-0 w-full h-[300px] pointer-events-none overflow-hidden z-0 transition-all duration-1000 ease-in-out ${show3DItems && introFinished ? 'opacity-100' : 'opacity-0 pointer-events-none translate-y-[-20px]'
+          className={`absolute top-0 left-0 w-full h-[300px] pointer-events-none overflow-hidden z-0 transition-opacity duration-1000 ease-in-out ${show3DItems && introFinished ? 'opacity-100' : 'opacity-0'
             }`}
         >
-          {/* Background Glow Particles */}
-          <ParticleGlow />
+          {show3DItems && introFinished && (
+            <>
+              {/* Background Glow Particles */}
+              <ParticleGlow />
 
-          {/* Left - New Deco */}
-          <div className="absolute left-4 md:left-12 -top-[22px] w-28 md:w-36 h-36 flex items-center justify-center">
-            <Lantern3D model="new" interactive={false} className="w-full h-full" />
-          </div>
+              {/* Left - New Deco */}
+              <div className="absolute left-4 md:left-12 -top-[22px] w-28 md:w-36 h-36 flex items-center justify-center">
+                <Lantern3D model="new" interactive={false} className="w-full h-full" />
+              </div>
 
-          {/* Center - Lantern */}
-          <div className="absolute left-1/2 -translate-x-1/2 top-14 w-28 md:w-44 h-[240px] md:h-[360px] z-0">
-            <Lantern3D model="lantern" interactive={false} className="w-full h-full" />
-          </div>
+              {/* Center - Lantern */}
+              <div className="absolute left-1/2 -translate-x-1/2 top-14 w-28 md:w-44 h-[240px] md:h-[360px] z-0">
+                <Lantern3D model="lantern" interactive={false} className="w-full h-full" />
+              </div>
 
-          {/* Right - Ramadan Deco */}
-          <div className="absolute right-4 md:right-12 -top-12 w-20 md:w-28 h-[200px] md:h-[300px]">
-            <div className="w-full h-full">
-              <Lantern3D model="ramadan" interactive={false} className="w-full h-full" />
-            </div>
-          </div>
+              {/* Right - Ramadan Deco */}
+              <div className="absolute right-4 md:right-12 -top-12 w-20 md:w-28 h-[200px] md:h-[300px]">
+                <div className="w-full h-full">
+                  <Lantern3D model="ramadan" interactive={false} className="w-full h-full" />
+                </div>
+              </div>
+            </>
+          )}
         </div>
 
         <div className="container mx-auto px-6 relative z-10">
@@ -198,7 +212,7 @@ export function Navigation() {
             {/* Mobile Center Logo */}
             <div className="md:hidden absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
               <Link href={`/${locale}`} className="flex flex-col items-center justify-center transform hover:scale-105 transition-transform duration-300">
-                <div className="relative w-[80px] h-[80px] rounded-full border-2 border-[#D4AF37] shadow-lg overflow-hidden p-0">
+                <div className="relative w-[80px] h-[80px] rounded-full border-2 border-[#D4AF37] shadow-lg overflow-hidden p-0 bg-[#00353F]">
                   <Image
                     src="/media/logo.png"
                     alt="Makroudh Omrani"
@@ -245,7 +259,7 @@ export function Navigation() {
                     damping: 20,
                     duration: 1.5
                   }}
-                  className="relative w-[120px] h-[120px] z-50 rounded-full border-[3px] border-[#D4AF37] shadow-xl overflow-hidden p-0 group-hover:border-[#F2C782] transition-all duration-300"
+                  className="relative w-[120px] h-[120px] z-50 rounded-full border-[3px] border-[#D4AF37] shadow-xl overflow-hidden p-0 group-hover:border-[#F2C782] transition-all duration-300 bg-[#00353F]"
                 >
                   <Image
                     src="/media/logo.png"
@@ -304,10 +318,10 @@ export function Navigation() {
                       <div className={`absolute top-full mt-2 w-48 bg-white rounded-lg shadow-xl border py-2 ${locale === 'ar' ? 'left-0' : 'right-0'}`}>
                         <Link
                           href={`/${locale}/profile`}
-                          className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                          className="flex items-center gap-3 px-4 py-3 text-sm font-bold text-gray-900 hover:bg-primary/5 hover:text-primary transition-all rounded-lg mx-2"
                           onClick={() => setUserMenuOpen(false)}
                         >
-                          <UserCircle className="w-4 h-4" />
+                          <UserCircle className="w-5 h-5" />
                           {t('profile')}
                         </Link>
                         <button
@@ -315,9 +329,9 @@ export function Navigation() {
                             signOut();
                             setUserMenuOpen(false);
                           }}
-                          className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                          className="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-red-600 hover:bg-red-50 transition-all rounded-lg mx-2"
                         >
-                          <LogOut className="w-4 h-4" />
+                          <LogOut className="w-5 h-5" />
                           {t('logout')}
                         </button>
                       </div>
