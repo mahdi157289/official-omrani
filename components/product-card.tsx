@@ -2,7 +2,8 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { formatPrice } from '@/lib/utils';
+import { useRouter } from 'next/navigation';
+import { useCart } from '@/components/providers/cart-provider';
 import { AddToCartButton } from './add-to-cart-button';
 import { Eye, Ear, ShoppingCart } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -40,6 +41,8 @@ interface ProductCardProps {
 
 export function ProductCard({ product, locale }: ProductCardProps) {
   const t = useTranslations('product');
+  const router = useRouter();
+  const { formatPrice } = useCart();
   const name = locale === 'ar'
     ? product.nameAr
     : locale === 'fr'
@@ -63,10 +66,24 @@ export function ProductCard({ product, locale }: ProductCardProps) {
     ? product.ingredientsAr
     : product.ingredientsFr;
 
+  // LinkPrefetcher: Aggressive prefetching for zero-wait navigation
+  const handlePrefetch = () => {
+    router.prefetch(`/${locale}/shop/${product.slug}`);
+  };
+
   return (
-    <div className="bg-[#F2C782] rounded-2xl shadow-lg overflow-hidden group flex flex-col h-full gold-border">
-      <div className="relative w-full h-64 overflow-hidden bg-gray-50">
-        <Link href={`/${locale}/shop/${product.slug}`} className="relative block w-full h-full">
+    <div 
+      className="bg-[#F2C782] rounded-2xl shadow-lg overflow-hidden group flex flex-col h-full gold-border"
+      onMouseEnter={handlePrefetch}
+      onTouchStart={handlePrefetch}
+    >
+      <div className="relative w-full h-64 overflow-hidden bg-gray-50 rounded-t-2xl isolation-isolate">
+        <Link 
+          href={`/${locale}/shop/${product.slug}`} 
+          prefetch={true} 
+          className="relative block w-full h-full overflow-hidden"
+          style={{ transform: 'translateZ(0)' }} // Safari clipping fix
+        >
           {product.images[0] ? (
             <Image
               src={image}
@@ -86,11 +103,11 @@ export function ProductCard({ product, locale }: ProductCardProps) {
           {/* Overlay gradient on hover */}
           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
         </Link>
-
         <div className="absolute top-0 right-0 h-full w-20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 z-40 pointer-events-none group-hover:pointer-events-auto">
           <div className="flex flex-col gap-3 mr-4">
             <Link
               href={`/${locale}/shop/${product.slug}`}
+              prefetch={true}
               className="w-11 h-11 rounded-full bg-white text-gray-900 shadow-xl hover:bg-primary hover:text-white flex items-center justify-center transition-all hover:scale-110 active:scale-90"
               aria-label={t('viewDetails')}
             >
