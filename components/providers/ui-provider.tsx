@@ -46,10 +46,9 @@ export function UIProvider({ children }: { children: React.ReactNode }) {
         if (savedSidebar !== null) {
           setSidebarCollapsed(savedSidebar === 'true');
         }
-        const savedIntro = localStorage.getItem('introFinished');
-        if (savedIntro !== null) {
-          setIntroFinished(savedIntro === 'true');
-        }
+        // Note: We no longer skip the splash on return visits.
+        // Instead, splash-screen.tsx reads sessionStorage to decide the duration (1s vs 4s).
+
       }
     } catch (error) {
       // Silently handle localStorage errors (e.g., in private browsing mode)
@@ -90,20 +89,16 @@ export function UIProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const setIntroFinishedHandler = (finished: boolean) => {
+  const setIntroFinishedHandler = React.useCallback((finished: boolean) => {
     setIntroFinished(finished);
     try {
-      if (typeof window !== 'undefined' && window.localStorage) {
-        if (finished) {
-          localStorage.setItem('introFinished', 'true');
-        } else {
-          localStorage.removeItem('introFinished');
-        }
+      if (typeof window !== 'undefined' && window.sessionStorage) {
+        sessionStorage.setItem('omrani_intro_finished', String(finished));
       }
     } catch (error) {
-      console.warn('Failed to save to localStorage:', error);
+      console.warn('Failed to save intro state:', error);
     }
-  };
+  }, []);
 
   return (
     <UIContext.Provider value={{

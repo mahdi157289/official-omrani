@@ -9,7 +9,9 @@ import { useSplashPreloader } from './splash-preloader';
 export function SplashScreen() {
     const { introFinished, setIntroFinished, isMounted } = useUI();
     const [show, setShow] = useState(true);
-    const [duration, setDuration] = useState(4000);
+    // 1s on refresh (assets cached), 4s on first visit (data preloading)
+    const isReturnVisit = typeof window !== 'undefined' && sessionStorage.getItem('omrani_intro_finished') === 'true';
+    const [duration, setDuration] = useState(isReturnVisit ? 1000 : 4000);
     const { status, isComplete } = useSplashPreloader();
 
     useEffect(() => {
@@ -20,7 +22,7 @@ export function SplashScreen() {
         }
 
         const startTime = Date.now();
-        const minDuration = 4000;
+        const minDuration = isReturnVisit ? 1000 : 4000; // 1s flash on refresh
 
         // Create a coordination interval to check for completion
         const checkCompletion = setInterval(() => {
