@@ -89,7 +89,7 @@ export function ProductCard({ product, locale }: ProductCardProps) {
               src={image}
               alt={altText || name}
               fill
-              className="object-cover transition-transform duration-700 group-hover:scale-110"
+              className="object-cover transition-transform duration-700 scale-100 group-hover:scale-110"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
             />
           ) : (
@@ -103,7 +103,7 @@ export function ProductCard({ product, locale }: ProductCardProps) {
           {/* Overlay gradient on hover */}
           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
         </Link>
-        <div className="absolute top-0 right-0 h-full w-20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 z-40 pointer-events-none group-hover:pointer-events-auto">
+        <div className="absolute top-0 right-0 h-full w-20 flex items-center justify-center translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-out z-40 pointer-events-none group-hover:pointer-events-auto">
           <div className="flex flex-col gap-3 mr-4">
             <Link
               href={`/${locale}/shop/${product.slug}`}

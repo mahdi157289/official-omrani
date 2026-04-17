@@ -2,7 +2,7 @@
 
 import React, { useRef, useState, useEffect, Suspense } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { Float, useTexture, PerspectiveCamera } from '@react-three/drei';
+import { Float, useTexture, PerspectiveCamera, Environment, ContactShadows } from '@react-three/drei';
 import * as THREE from 'three';
 
 // Enable THREE.js caching globally for 3D assets acceleration
@@ -113,14 +113,16 @@ function CoinBody({ spinRef, meshRef, isRotating }: {
   return (
     <>
       {/* Coin body - Renders INSTANTLY because it doesn't wait for textures */}
-      {/* Optimization: 32 segments instead of 64, meshPhongMaterial for faster shader compilation */}
+      {/* Optimization: 64 segments for perfection, MeshPhysicalMaterial for mirror finish */}
       <mesh ref={meshRef} rotation={[-Math.PI / 2, 0, 0]}>
-        <cylinderGeometry args={[2, 2, 0.25, 32]} />
-        <meshPhongMaterial
+        <cylinderGeometry args={[2, 2, 0.25, 64]} />
+        <meshPhysicalMaterial
           color="#D4AF37"
-          emissive="#403010"
-          specular="#FFFFFF"
-          shininess={100}
+          metalness={1.0}
+          roughness={0.05}
+          clearcoat={1.0}
+          clearcoatRoughness={0.1}
+          reflectivity={1.0}
         />
       </mesh>
 
@@ -129,14 +131,22 @@ function CoinBody({ spinRef, meshRef, isRotating }: {
         <LogoPlanes />
       </Suspense>
 
-      {/* Optional decorative rings - Optimized geometry */}
+      {/* Decorative rings - Polished finish */}
       <mesh position={[0, 0, 0.126]}>
-        <ringGeometry args={[1.7, 1.8, 32]} />
-        <meshPhongMaterial color="#A07937" emissive="#201505" shininess={60} />
+        <ringGeometry args={[1.7, 1.8, 64]} />
+        <meshPhysicalMaterial 
+          color="#A07937" 
+          metalness={1.0} 
+          roughness={0.1} 
+        />
       </mesh>
       <mesh position={[0, 0, -0.126]} rotation={[0, Math.PI, 0]}>
-        <ringGeometry args={[1.7, 1.8, 32]} />
-        <meshPhongMaterial color="#A07937" emissive="#201505" shininess={60} />
+        <ringGeometry args={[1.7, 1.8, 64]} />
+        <meshPhysicalMaterial 
+          color="#A07937" 
+          metalness={1.0} 
+          roughness={0.1} 
+        />
       </mesh>
     </>
   );
@@ -200,20 +210,20 @@ export function Logo3D({ className = 'w-full h-full', isRotating = false }: Logo
             powerPreference: 'high-performance',
           }}
         >
-          <PerspectiveCamera makeDefault position={[0, 0, 6]} fov={40} />
-          <ambientLight intensity={1.2} color="#ffffff" />
-          <pointLight position={[10, 10, 10]} intensity={1.5} color="#FFF9E3" />
-          <pointLight position={[-10, -10, -10]} intensity={0.8} color="#D4AF37" />
+          <PerspectiveCamera makeDefault position={[0, 0, 5]} fov={35} />
+          
+          {/* Enhanced Lighting for Polished Steel/Gold */}
+          <ambientLight intensity={0.4} />
+          <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={2} color="#FFF9E3" castShadow />
+          <pointLight position={[-10, -10, -10]} intensity={1} color="#D4AF37" />
+          
+          {/* Real reflections - providing the glare and Metallic look */}
+          <Suspense fallback={null}>
+            <Environment preset="city" />
+          </Suspense>
 
           <Suspense fallback={null}>
-            <Float
-              speed={2}
-              rotationIntensity={0}
-              floatIntensity={0.5}
-              floatingRange={[-0.1, 0.1]}
-            >
-              <CoinModel isRotating={isRotating} />
-            </Float>
+            <CoinModel isRotating={isRotating} />
           </Suspense>
         </Canvas>
       </Logo3DErrorBoundary>
