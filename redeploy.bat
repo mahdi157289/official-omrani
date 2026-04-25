@@ -21,13 +21,16 @@ cd /d %OMRANI_DIR%
 
 echo [2/6] Authenticating Docker with ECR...
 %AWS_EXE% ecr get-login-password --region %REGION% | %DOCKER_EXE% login --username AWS --password-stdin %REGISTRY%
+if %errorlevel% neq 0 ( echo AWS/Docker login failed! & pause & exit /b )
 
 echo [3/6] Building Docker image...
 %DOCKER_EXE% build -t omrani-shop .
+if %errorlevel% neq 0 ( echo Docker build failed! & pause & exit /b )
 
 echo [4/6] Tagging and Pushing to ECR...
 %DOCKER_EXE% tag omrani-shop:latest %REPO_URL%:latest
 %DOCKER_EXE% push %REPO_URL%:latest
+if %errorlevel% neq 0 ( echo Docker push failed! & pause & exit /b )
 
 echo [5/6] Tainting EC2 instance in Terraform...
 cd /d %TERRAFORM_DIR%
