@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
-import { prisma } from '@/lib/prisma'; // Ensure correct import for your prisma setup
+import { prisma } from '@/lib/prisma';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'dummy', {
   apiVersion: '2024-06-20' as any,
@@ -8,17 +8,14 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'dummy', {
 
 export async function POST(req: Request) {
   try {
-    const { orderId } = await req.json();
+    const { orderId, locale = 'ar' } = await req.json();
 
     if (!orderId) {
       return NextResponse.json({ error: 'Order ID is required' }, { status: 400 });
     }
 
-    // Attempt to dynamically import prisma just in case to match other routes
-    const { prisma: db } = await import('@/lib/prisma');
-
     // Fetch order from DB
-    const order = await db.order.findUnique({
+    const order = await prisma.order.findUnique({
       where: { id: orderId },
       include: { items: true },
     });
@@ -27,27 +24,55 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Order not found' }, { status: 404 });
     }
 
+    // Determine currency and exchange rate based on locale
+    let currency = 'tnd';
+    let exchangeRate = 1;
+    let multiplier = 1000; // TND uses 3 decimal places (millimes)
+
+    if (locale === 'en') {
+      currency = 'usd';
+      multiplier = 100; // USD uses 2 decimal places (cents)
+      const config = await prisma.siteConfig.findUnique({ where: { key: 'exchange_rate_usd' } });
+      exchangeRate = parseFloat(config?.value || '0.32');
+    } else if (locale === 'fr') {
+      currency = 'eur';
+      multiplier = 100; // EUR uses 2 decimal places (cents)
+      const config = await prisma.siteConfig.findUnique({ where: { key: 'exchange_rate_eur' } });
+      exchangeRate = parseFloat(config?.value || '0.30');
+    }
+
     // Build line items for Stripe
-    const lineItems = order.items.map((item) => ({
-      price_data: {
-        currency: 'usd', // or 'eur', 'dt' depending on your Stripe account. Assuming usd/eur for Stripe.
-        product_data: {
-          name: item.variantNameAr || item.variantNameFr || 'Makroudh Product',
+    const lineItems = order.items.map((item) => {
+      // Calculate unit amount in the target currency's smallest unit
+      const unitPriceTnd = Number(item.unitPrice);
+      const convertedPrice = unitPriceTnd * exchangeRate;
+      const amountInSmallestUnit = Math.round(convertedPrice * multiplier);
+
+      return {
+        price_data: {
+          currency: currency,
+          product_data: {
+            name: locale === 'ar' ? item.variantNameAr || 'منتج غير معروف' : item.variantNameFr || 'Produit Makroudh',
+          },
+          unit_amount: amountInSmallestUnit,
         },
-        unit_amount: Math.round(Number(item.unitPrice) * 100), // Stripe expects cents
-      },
-      quantity: item.quantity,
-    }));
+        quantity: item.quantity,
+      };
+    });
 
     // Add Delivery Fee as a separate line item if > 0
     if (order.deliveryFee && Number(order.deliveryFee) > 0) {
+      const deliveryFeeTnd = Number(order.deliveryFee);
+      const convertedFee = deliveryFeeTnd * exchangeRate;
+      const feeInSmallestUnit = Math.round(convertedFee * multiplier);
+
       lineItems.push({
         price_data: {
-          currency: 'usd',
+          currency: currency,
           product_data: {
-            name: 'Delivery Fee',
+            name: locale === 'en' ? 'Delivery Fee' : (locale === 'fr' ? 'Frais de livraison' : 'رسوم التوصيل'),
           },
-          unit_amount: Math.round(Number(order.deliveryFee) * 100),
+          unit_amount: feeInSmallestUnit,
         },
         quantity: 1,
       });
@@ -58,13 +83,15 @@ export async function POST(req: Request) {
       payment_method_types: ['card'],
       line_items: lineItems,
       mode: 'payment',
-      success_url: `${process.env.NEXTAUTH_URL}/en/checkout/success?orderId=${order.orderNumber}&session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.NEXTAUTH_URL}/en/checkout?canceled=true`,
+      success_url: `${process.env.NEXTAUTH_URL}/${locale}/checkout/success?orderId=${order.orderNumber}&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${process.env.NEXTAUTH_URL}/${locale}/checkout?canceled=true`,
       client_reference_id: order.id,
       customer_email: order.customerEmail,
       metadata: {
         orderId: order.id,
         orderNumber: order.orderNumber,
+        currency_used: currency,
+        exchange_rate: exchangeRate.toString(),
       },
     });
 

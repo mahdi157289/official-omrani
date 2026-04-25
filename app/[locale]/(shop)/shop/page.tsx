@@ -4,8 +4,19 @@ import { PackageCard } from '@/components/package-card';
 import { ShopFilters } from '@/components/shop-filters';
 import { ShopLayoutClient } from '@/components/shop-layout-client';
 
-async function getStoreItems(search?: string, categorySlug?: string, minPrice?: number, maxPrice?: number, type?: string) {
+async function getStoreItems(sessionId: string, search?: string, categorySlug?: string, minPrice?: number, maxPrice?: number, type?: string) {
   try {
+    const { getCache, setCache } = await import('@/lib/redis-cache');
+    
+    // Create a cache key based on filters
+    const cacheKey = `store:items:${categorySlug || 'all'}:${type || 'all'}:${search || 'none'}:${minPrice || '0'}:${maxPrice || 'inf'}`;
+    
+    // Try to get from cache first
+    const cached = await getCache<any[]>(sessionId, cacheKey);
+    if (cached) {
+      return cached;
+    }
+
     const { prisma } = await import('@/lib/prisma');
 
     const productWhere: any = { status: 'ACTIVE' };
@@ -28,8 +39,6 @@ async function getStoreItems(search?: string, categorySlug?: string, minPrice?: 
 
     if (categorySlug) {
       productWhere.category = { slug: categorySlug };
-      // Packages don't have categories in this schema, so if category is filtered, maybe packages should be excluded?
-      // Actually, if a specific category is selected, we only show products.
     }
 
     const productMin = minPrice !== undefined ? { gte: minPrice } : {};
@@ -55,7 +64,6 @@ async function getStoreItems(search?: string, categorySlug?: string, minPrice?: 
     }
 
     if (!type || type === 'package') {
-      // Only fetch packages if no category is selected (as per current schema)
       if (!categorySlug) {
         packages = await prisma.package.findMany({
           where: packageWhere,
@@ -65,18 +73,21 @@ async function getStoreItems(search?: string, categorySlug?: string, minPrice?: 
       }
     }
 
-    // Tag them so we can Distinguish
     const items = [
       ...products.map(p => ({ ...p, storeType: 'product' })),
       ...packages.map(p => ({ ...p, storeType: 'package' }))
     ];
 
-    // Sort by date or relevance
-    return items.sort((a, b) => {
+    const sortedItems = items.sort((a, b) => {
       const dateA = new Date(a.createdAt || 0).getTime();
       const dateB = new Date(b.createdAt || 0).getTime();
       return dateB - dateA;
     });
+
+    // Cache the result
+    await setCache(sessionId, cacheKey, sortedItems);
+
+    return sortedItems;
 
   } catch (error) {
     console.error('Store fetch error:', error);
@@ -94,6 +105,8 @@ export default async function ShopPage({
   const { locale } = await params;
   const { search, category, minPrice, maxPrice, type } = await searchParams;
   const t = await getTranslations('common');
+  const { getServerSessionId } = await import('@/lib/get-session-id');
+  const sessionId = await getServerSessionId();
 
   const { prisma } = await import('@/lib/prisma');
   const categories = await prisma.category.findMany({
@@ -105,7 +118,7 @@ export default async function ShopPage({
   const parsedMinPrice = minPrice ? parseFloat(minPrice) : undefined;
   const parsedMaxPrice = maxPrice ? parseFloat(maxPrice) : undefined;
 
-  const items = await getStoreItems(search, category, parsedMinPrice, parsedMaxPrice, type);
+  const items = await getStoreItems(sessionId, search, category, parsedMinPrice, parsedMaxPrice, type);
 
   const serializedItems = items.map(item => {
     if (item.storeType === 'product') {

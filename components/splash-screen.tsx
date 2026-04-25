@@ -9,9 +9,7 @@ import { useSplashPreloader } from './splash-preloader';
 export function SplashScreen() {
     const { introFinished, setIntroFinished, isMounted } = useUI();
     const [show, setShow] = useState(true);
-    // 3s on refresh (assets cached), 4s on first visit (data preloading)
-    const isReturnVisit = typeof window !== 'undefined' && sessionStorage.getItem('omrani_intro_finished') === 'true';
-    const [duration, setDuration] = useState(isReturnVisit ? 3000 : 4000);
+    const [duration, setDuration] = useState(4000);
     const { status, isComplete } = useSplashPreloader();
 
     useEffect(() => {
@@ -22,7 +20,7 @@ export function SplashScreen() {
         }
 
         const startTime = Date.now();
-        const minDuration = isReturnVisit ? 3000 : 4000; // 3s on refresh, 4s on first visit
+        const minDuration = 4000;
 
         // Create a coordination interval to check for completion
         const checkCompletion = setInterval(() => {
@@ -60,14 +58,8 @@ export function SplashScreen() {
                     <div className="relative flex flex-col items-center">
                         {/* Animated Logo Container - Golden Coin */}
                         <motion.div
-                            initial={{ scale: 0.8, opacity: 0 }}
+                            initial={{ scale: 1, opacity: 1 }}
                             animate={{ scale: 1, opacity: 1 }}
-                            transition={{
-                                type: "spring",
-                                stiffness: 100, // Reduced from 200 for a more "weighted" premium arrival
-                                damping: 20,
-                                duration: 0.8
-                            }}
                             className="w-64 h-64 md:w-[320px] md:h-[320px] relative z-50 mb-8"
                         >
                             <Logo3D isRotating={true} />

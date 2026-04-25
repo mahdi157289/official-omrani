@@ -27,7 +27,7 @@ export function ProductSkeleton() {
     const [visible, setVisible] = useState(true);
 
     useEffect(() => {
-        // Hide skeleton after 0.5s
+        // Hide skeleton after 0.5s to ensure a fast, "zero-wait" perceived experience
         const timer = setTimeout(() => {
             setVisible(false);
         }, 500);
@@ -40,28 +40,30 @@ export function ProductSkeleton() {
     }
 
     return (
-        <div className="bg-[#F2C782]/40 rounded-2xl shadow-lg border border-[#D4AF37]/20 flex flex-col h-full overflow-hidden">
+        <div className="bg-[#F2C782]/20 backdrop-blur-sm rounded-2xl shadow-lg flex flex-col h-full overflow-hidden gold-border transition-all duration-300">
             {/* Image Skeleton */}
-            <Skeleton className="w-full h-64 rounded-none" />
+            <div className="w-full h-64 bg-white/10 animate-pulse relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full animate-[shimmer_1.5s_infinite]" />
+            </div>
 
             <div className="p-5 flex flex-col items-center flex-grow space-y-4">
                 {/* Title Skeleton */}
-                <Skeleton className="h-8 w-3/4" />
+                <div className="h-8 w-3/4 bg-white/20 rounded-md animate-pulse" />
+
+                {/* Separator Skeleton */}
+                <div className="w-16 h-1 bg-[#346977]/30 mx-auto mb-2 rounded-full" />
 
                 {/* Description Skeleton */}
-                <div className="w-full space-y-2">
-                    <Skeleton className="h-4 w-full" />
-                    <Skeleton className="h-4 w-5/6" />
+                <div className="w-full space-y-2 mt-2">
+                    <div className="h-4 w-full bg-white/15 rounded-md animate-pulse mx-auto" />
+                    <div className="h-4 w-5/6 bg-white/15 rounded-md animate-pulse mx-auto" />
                 </div>
 
-                {/* Ingredients Skeleton */}
-                <Skeleton className="h-4 w-1/2" />
-
                 {/* Price Skeleton */}
-                <Skeleton className="h-8 w-1/3 mt-auto" />
+                <div className="h-8 w-1/3 mt-auto bg-primary/20 rounded-md animate-pulse" />
 
                 {/* Button Skeleton */}
-                <Skeleton className="h-10 w-full rounded-lg" />
+                <div className="h-10 w-full bg-secondary/30 rounded-lg animate-pulse" />
             </div>
         </div>
     );

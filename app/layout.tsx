@@ -34,6 +34,10 @@ export default function RootLayout({
 }) {
   return (
     <html suppressHydrationWarning>
+      <head>
+        {/* Preload critical 3D assets for zero-latency rendering */}
+        <link rel="preload" href="/media/logo.png" as="image" fetchpriority="high" />
+      </head>
       <body className={`${playfair.variable} ${lato.variable} ${amiri.variable} font-sans antialiased`}>
         {children}
       </body>

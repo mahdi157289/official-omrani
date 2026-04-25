@@ -36,6 +36,6 @@ export function calculateDiscount(
  */
 export function formatPrice(price: number | Decimal): string {
   const numPrice = typeof price === 'object' ? price.toNumber() : price;
-  return `${numPrice.toFixed(3)} TND`;
+  return `${numPrice.toFixed(3)} DT`;
 }
 

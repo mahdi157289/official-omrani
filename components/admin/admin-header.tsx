@@ -12,11 +12,11 @@ export function AdminHeader() {
   const t = useTranslations('admin');
   const [pendingOrderCount, setPendingOrderCount] = useState(0);
 
-  // Poll for new pending orders every 30 seconds
+  // Poll for new pending orders every 15 seconds
   useEffect(() => {
     const fetchPendingOrders = async () => {
       try {
-        const res = await fetch('/api/orders?status=PENDING&count=true');
+        const res = await fetch('/api/admin/pending-orders');
         if (res.ok) {
           const data = await res.json();
           setPendingOrderCount(data.count ?? 0);
@@ -25,7 +25,7 @@ export function AdminHeader() {
     };
 
     fetchPendingOrders();
-    const interval = setInterval(fetchPendingOrders, 30000);
+    const interval = setInterval(fetchPendingOrders, 15000);
     return () => clearInterval(interval);
   }, []);
 
@@ -58,9 +58,11 @@ export function AdminHeader() {
         </Link>
 
 
-        <div className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-lg ml-2">
-          <User className="w-5 h-5 text-gray-600" />
-          <span className="text-sm font-medium text-gray-700">
+        <div className="flex items-center gap-3 px-4 py-2 bg-white border border-gray-100 rounded-xl shadow-sm ml-2">
+          <div className="p-1.5 bg-gray-100 rounded-lg">
+            <User className="w-4 h-4 text-primary" />
+          </div>
+          <span className="text-sm font-bold text-gray-900">
             {session?.user?.name || session?.user?.email}
           </span>
         </div>

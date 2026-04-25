@@ -46,9 +46,10 @@ export function UIProvider({ children }: { children: React.ReactNode }) {
         if (savedSidebar !== null) {
           setSidebarCollapsed(savedSidebar === 'true');
         }
-        // Note: We no longer skip the splash on return visits.
-        // Instead, splash-screen.tsx reads sessionStorage to decide the duration (1s vs 4s).
-
+        const savedIntro = sessionStorage.getItem('omrani_intro_finished');
+        if (savedIntro === 'true') {
+          setIntroFinished(true);
+        }
       }
     } catch (error) {
       // Silently handle localStorage errors (e.g., in private browsing mode)

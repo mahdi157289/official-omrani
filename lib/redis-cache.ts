@@ -67,7 +67,9 @@ export async function getCache<T>(
   const client = getRedisClient();
   if (client) {
     try {
-      await client.connect();
+      if (client.status === 'wait') {
+        await client.connect();
+      }
       const value = await client.get(cacheKey);
       if (value) {
         return JSON.parse(value) as T;
@@ -107,7 +109,9 @@ export async function setCache<T>(
   const client = getRedisClient();
   if (client) {
     try {
-      await client.connect();
+      if (client.status === 'wait') {
+        await client.connect();
+      }
       await client.setex(cacheKey, ttl, serialized);
       return;
     } catch (error) {
@@ -132,7 +136,9 @@ export async function deleteCache(sessionId: string, key: string): Promise<void>
   const client = getRedisClient();
   if (client) {
     try {
-      await client.connect();
+      if (client.status === 'wait') {
+        await client.connect();
+      }
       await client.del(cacheKey);
     } catch (error) {
       console.warn('Redis delete error:', error);
@@ -153,7 +159,9 @@ export async function clearSessionCache(sessionId: string): Promise<void> {
   const client = getRedisClient();
   if (client) {
     try {
-      await client.connect();
+      if (client.status === 'wait') {
+        await client.connect();
+      }
       const keys = await client.keys(pattern);
       if (keys.length > 0) {
         await client.del(...keys);

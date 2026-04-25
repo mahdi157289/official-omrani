@@ -28,6 +28,19 @@ export function useSplashPreloader() {
 
   const [isComplete, setIsComplete] = useState(false);
 
+  // Check if critical resources are no longer pending/loading
+  useEffect(() => {
+    if (status.products !== 'pending' && status.products !== 'loading' && 
+        status.packages !== 'pending' && status.packages !== 'loading') {
+      
+      // Small buffer to ensure rendering is ready
+      const timer = setTimeout(() => {
+        setIsComplete(true);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [status.products, status.packages]);
+
   useEffect(() => {
     const sessionId = getSessionId().sessionId;
     const startTime = Date.now();
@@ -40,6 +53,7 @@ export function useSplashPreloader() {
 
     // Preload critical resources
     const preloadCritical = async () => {
+      setStatus(prev => ({ ...prev, products: 'loading', packages: 'loading' }));
       const criticalStart = Date.now();
 
       try {
@@ -148,13 +162,8 @@ export function useSplashPreloader() {
       preloadNonCritical();
     });
 
-    // Overall timeout
-    const overallTimeout = setTimeout(() => {
-      setIsComplete(true);
-    }, TOTAL_TIMEOUT);
-
     return () => {
-      clearTimeout(overallTimeout);
+      // Cleanup if needed
     };
   }, []);
 

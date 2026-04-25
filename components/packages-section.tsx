@@ -153,13 +153,18 @@ export async function PackagesSection({
                     {locale === 'ar' ? pkg.descriptionAr : locale === 'fr' ? pkg.descriptionFr : pkg.descriptionEn || pkg.descriptionFr}
                   </p>
 
-                  {((pkg as any).ingredientsAr || (pkg as any).ingredientsFr) && (
-                    <p className="text-sm font-semibold text-primary mb-6 line-clamp-2 text-center">
-                      {((locale === 'ar' ? ((pkg as any).ingredientsAr || (pkg as any).ingredientsFr) : ((pkg as any).ingredientsFr || (pkg as any).ingredientsAr)) || '')
-                        .split('\n')
-                        .filter((line: string) => line.trim())
-                        .join(' • ')}
-                    </p>
+                  {((pkg as any).recipeIngredientsAr || (pkg as any).recipeIngredientsFr) && (
+                    <div className="mb-6 text-center">
+                      <span className="text-xs font-bold uppercase tracking-wider text-[#346977] opacity-70 block mb-1">
+                        {locale === 'ar' ? 'المكونات' : locale === 'fr' ? 'Ingrédients' : 'Ingredients'}
+                      </span>
+                      <p className="text-sm font-semibold text-gray-900 line-clamp-2">
+                        {((locale === 'ar' ? ((pkg as any).recipeIngredientsAr || (pkg as any).recipeIngredientsFr) : ((pkg as any).recipeIngredientsFr || (pkg as any).recipeIngredientsAr)) || '')
+                          .split('\n')
+                          .filter((line: string) => line.trim())
+                          .join(' • ')}
+                      </p>
+                    </div>
                   )}
 
                   <div className="mt-auto">

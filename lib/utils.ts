@@ -17,7 +17,7 @@ export function formatPrice(price: number | string | { toNumber?: () => number }
     numPrice = Number(price) || 0;
   }
   
-  return `${numPrice.toFixed(3)} TND`;
+  return `${numPrice.toFixed(3)} DT`;
 }
 
 export function generateOrderNumber(): string {

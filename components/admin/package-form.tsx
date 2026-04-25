@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -28,6 +28,9 @@ export function PackageForm({ initialData }: PackageFormProps) {
     ingredientsAr: initialData?.ingredientsAr || '',
     ingredientsFr: initialData?.ingredientsFr || '',
     ingredientsEn: initialData?.ingredientsEn || '',
+    recipeIngredientsAr: initialData?.recipeIngredientsAr || '',
+    recipeIngredientsFr: initialData?.recipeIngredientsFr || '',
+    recipeIngredientsEn: initialData?.recipeIngredientsEn || '',
     price: initialData?.price || '',
     discountPrice: initialData?.discountPrice || '',
     isActive: initialData?.isActive !== undefined ? initialData.isActive : true,
@@ -185,7 +188,7 @@ export function PackageForm({ initialData }: PackageFormProps) {
       </div>
 
       <div className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-xl font-semibold mb-2">{t('packageContents')}</h2>
+        <h2 className="text-xl font-semibold mb-2">{t('packageContents')} (Pack Content)</h2>
         <p className="text-sm text-gray-500 mb-6">{t('packageContentsDesc')}</p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="space-y-2">
@@ -196,7 +199,7 @@ export function PackageForm({ initialData }: PackageFormProps) {
               onChange={handleChange}
               rows={5}
               className="w-full px-3 py-2 border rounded-lg focus:ring-primary focus:border-primary text-gray-900 bg-white placeholder-gray-400"
-              placeholder="Ù…Ø«Ø§Ù„: 500 Ø¬Ø±Ø§Ù… Ù…Ù‚Ø±ÙˆØ¶ ÙƒÙ„Ø§Ø³ÙŠÙƒÙŠØŒ 500 Ø¬Ø±Ø§Ù… Ù…Ù‚Ø±ÙˆØ¶ Ø¨Ø§Ù„ØªÙ…Ø±..."
+              placeholder="مثال: 500 جرام مقروض كلاسيكي، 500 جرام مقروض بالتمر..."
               dir="rtl"
             />
           </div>
@@ -220,6 +223,48 @@ export function PackageForm({ initialData }: PackageFormProps) {
               rows={5}
               className="w-full px-3 py-2 border rounded-lg focus:ring-primary focus:border-primary text-gray-900 bg-white placeholder-gray-400"
               placeholder="Ex: 500g Classic Makroudh, 500g Dates Makroudh..."
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* NEW: Recipe Ingredients Section */}
+      <div className="bg-white rounded-lg shadow p-6 mt-8">
+        <h2 className="text-xl font-semibold mb-2">Ingredients (Raw Ingredients)</h2>
+        <p className="text-sm text-gray-500 mb-6">List the raw ingredients for the clients (e.g. Flour, Sugar, Honey...)</p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">المكونات (AR)</label>
+            <textarea
+              name="recipeIngredientsAr"
+              value={formData.recipeIngredientsAr}
+              onChange={handleChange}
+              rows={3}
+              className="w-full px-3 py-2 border rounded-lg focus:ring-primary focus:border-primary text-gray-900 bg-white placeholder-gray-400"
+              placeholder="مثال: سميد، زبدة، تمر، عسل..."
+              dir="rtl"
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">Ingrédients (FR)</label>
+            <textarea
+              name="recipeIngredientsFr"
+              value={formData.recipeIngredientsFr}
+              onChange={handleChange}
+              rows={3}
+              className="w-full px-3 py-2 border rounded-lg focus:ring-primary focus:border-primary text-gray-900 bg-white placeholder-gray-400"
+              placeholder="Ex: Semoule, Beurre, Dattes, Miel..."
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">Ingredients (EN)</label>
+            <textarea
+              name="recipeIngredientsEn"
+              value={formData.recipeIngredientsEn}
+              onChange={handleChange}
+              rows={3}
+              className="w-full px-3 py-2 border rounded-lg focus:ring-primary focus:border-primary text-gray-900 bg-white placeholder-gray-400"
+              placeholder="Ex: Semolina, Butter, Dates, Honey..."
             />
           </div>
         </div>

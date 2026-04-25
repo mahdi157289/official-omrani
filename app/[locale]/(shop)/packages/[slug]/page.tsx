@@ -98,6 +98,62 @@ export default async function PackageDetailPage({
                   </p>
                 </div>
 
+                {/* Pack Contents */}
+                {(pkg.ingredientsAr || pkg.ingredientsFr || (pkg as any).ingredientsEn) && (
+                  <div className="mb-10">
+                    <h3 className="font-black text-2xl mb-6 text-amber-500 uppercase tracking-widest flex items-center gap-3">
+                      <span className="w-8 h-1 bg-amber-500 rounded-full" />
+                      {t('packageContents')}
+                    </h3>
+                    <div className="bg-white/10 p-6 rounded-2xl border border-white/10 backdrop-blur-sm">
+                      <ul className="space-y-3">
+                        {((locale === 'ar'
+                          ? (pkg.ingredientsAr || pkg.ingredientsFr || (pkg as any).ingredientsEn)
+                          : locale === 'fr'
+                            ? (pkg.ingredientsFr || pkg.ingredientsAr || (pkg as any).ingredientsEn)
+                            : ((pkg as any).ingredientsEn || pkg.ingredientsFr || pkg.ingredientsAr)) || '')
+                          .split('\n')
+                          .filter((line: string) => line.trim())
+                          .map((line: string, i: number) => (
+                            <li key={i} className="flex items-start gap-3 text-white text-lg">
+                              <span className="text-amber-400 mt-1 text-xl font-bold flex-shrink-0">✦</span>
+                              <span className="leading-relaxed drop-shadow-sm font-medium">{line.trim()}</span>
+                            </li>
+                          ))
+                        }
+                      </ul>
+                    </div>
+                  </div>
+                )}
+
+                {/* Recipe Ingredients */}
+                {((pkg as any).recipeIngredientsAr || (pkg as any).recipeIngredientsFr || (pkg as any).recipeIngredientsEn) && (
+                  <div className="mb-10">
+                    <h3 className="font-black text-2xl mb-6 text-amber-500 uppercase tracking-widest flex items-center gap-3">
+                      <span className="w-8 h-1 bg-amber-500 rounded-full" />
+                      {t('recipeIngredients')}
+                    </h3>
+                    <div className="bg-white/10 p-6 rounded-2xl border border-white/10 backdrop-blur-sm">
+                      <ul className="space-y-3">
+                        {((locale === 'ar'
+                          ? ((pkg as any).recipeIngredientsAr || (pkg as any).recipeIngredientsFr || (pkg as any).recipeIngredientsEn)
+                          : locale === 'fr'
+                            ? ((pkg as any).recipeIngredientsFr || (pkg as any).recipeIngredientsAr || (pkg as any).recipeIngredientsEn)
+                            : ((pkg as any).recipeIngredientsEn || (pkg as any).recipeIngredientsFr || (pkg as any).recipeIngredientsAr)) || '')
+                          .split('\n')
+                          .filter((line: string) => line.trim())
+                          .map((line: string, i: number) => (
+                            <li key={i} className="flex items-start gap-3 text-white text-lg">
+                              <span className="text-amber-400 mt-1 text-xl font-bold flex-shrink-0">✦</span>
+                              <span className="leading-relaxed drop-shadow-sm font-medium">{line.trim()}</span>
+                            </li>
+                          ))
+                        }
+                      </ul>
+                    </div>
+                  </div>
+                )}
+
                 <div className="flex flex-col sm:flex-row items-center gap-6">
                   <AddToCartButton
                     itemId={pkg.id}
@@ -115,33 +171,7 @@ export default async function PackageDetailPage({
                   </div>
                 </div>
 
-                {/* Pack Contents */}
-                {(pkg.ingredientsAr || pkg.ingredientsFr || (pkg as any).ingredientsEn) && (
-                  <div className="mt-16 pt-10 border-t border-white/10">
-                    <h3 className="font-black text-2xl mb-6 text-amber-500 uppercase tracking-widest flex items-center gap-3">
-                      <span className="w-8 h-1 bg-amber-500 rounded-full" />
-                      {locale === 'ar' ? 'محتوى الباقة' : locale === 'fr' ? 'Contenu du Pack' : 'What\'s Inside'}
-                    </h3>
-                    <div className="bg-white/5 p-6 rounded-2xl border border-white/10">
-                      <ul className="space-y-3">
-                        {((locale === 'ar'
-                          ? (pkg.ingredientsAr || pkg.ingredientsFr || (pkg as any).ingredientsEn)
-                          : locale === 'fr'
-                            ? (pkg.ingredientsFr || pkg.ingredientsAr || (pkg as any).ingredientsEn)
-                            : ((pkg as any).ingredientsEn || pkg.ingredientsFr || pkg.ingredientsAr)) || '')
-                          .split('\n')
-                          .filter((line: string) => line.trim())
-                          .map((line: string, i: number) => (
-                            <li key={i} className="flex items-start gap-3 text-white/85 text-lg">
-                              <span className="text-amber-500 mt-1 text-xl font-bold flex-shrink-0">✦</span>
-                              <span className="leading-relaxed">{line.trim()}</span>
-                            </li>
-                          ))
-                        }
-                      </ul>
-                    </div>
-                  </div>
-                )}
+
               </div>
             </div>
           </div>

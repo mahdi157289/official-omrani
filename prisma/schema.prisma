@@ -474,6 +474,9 @@ model Package {
   ingredientsAr   String?
   ingredientsFr   String?
   ingredientsEn   String?
+  recipeIngredientsAr String?
+  recipeIngredientsFr String?
+  recipeIngredientsEn String?
   price           Decimal
   discountPrice   Decimal?
   imageId         String?

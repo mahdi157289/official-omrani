@@ -20,6 +20,7 @@ interface CartContextType {
   isOpen: boolean;
   isLoading: boolean;
   total: number;
+  rates: { usd: number, eur: number };
   itemCount: number;
   openCart: () => void;
   closeCart: () => void;
@@ -28,6 +29,7 @@ interface CartContextType {
   removeFromCart: (itemId: string) => Promise<void>;
   updateQuantity: (itemId: string, quantity: number) => Promise<void>;
   clearCart: () => void;
+  formatPrice: (price: any) => string;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -43,32 +45,40 @@ export function CartProvider({ children, locale }: { children: React.ReactNode; 
   }, []);
 
   useEffect(() => {
-    // #region agent log (avoid render-time side effects)
-    if (typeof window !== 'undefined' && typeof fetch === 'function') {
-      const browserInfo = typeof navigator !== 'undefined' ? {
-        isChrome: /Chrome/.test(navigator.userAgent) && /Google Inc/.test((navigator as any).vendor),
-        isEdge: /Edg/.test(navigator.userAgent),
-        chromeVersion: /Chrome\/(\d+)/.exec(navigator.userAgent)?.[1],
-      } : {};
-      fetch('http://127.0.0.1:7242/ingest/29c793d4-1785-44a7-95ca-8aefed5f088b', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          location: 'cart-provider.tsx:useEffect',
-          message: 'CartProvider mounted',
-          data: { locale, mounted, hasWindow: typeof window !== 'undefined', hasDocument: typeof document !== 'undefined', ...browserInfo },
-          timestamp: Date.now(),
-          hypothesisId: 'A,B,C,F',
-          runId: 'post-fix',
-        }),
-      }).catch(() => {});
-    }
-    // #endregion
+    // Initialization side effects can be added here
   }, [locale, mounted]);
   
   const [items, setItems] = useState<CartItem[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [rates, setRates] = useState({ usd: 0.32, eur: 0.30 });
+
+  useEffect(() => {
+    if (mounted) {
+      fetch('/api/settings')
+        .then(r => r.json())
+        .then(data => {
+          if (data.usd && data.eur) setRates(data);
+        })
+        .catch(() => {});
+    }
+  }, [mounted]);
+
+  const formatPriceLocal = useCallback((price: any) => {
+    let num: number;
+    if (typeof price === 'number') {
+      num = price;
+    } else if (typeof price === 'string') {
+      num = parseFloat(price);
+    } else if (price && typeof price.toNumber === 'function') {
+      num = price.toNumber();
+    } else {
+      num = Number(price) || 0;
+    }
+
+    if (locale === 'ar') return `${num.toFixed(3)} د.ت`;
+    return `${num.toFixed(3)} DT`;
+  }, [locale]);
 
   const fetchCart = useCallback(async () => {
     try {
@@ -190,6 +200,7 @@ export function CartProvider({ children, locale }: { children: React.ReactNode; 
     isOpen,
     isLoading,
     total,
+    rates,
     itemCount,
     openCart,
     closeCart,
@@ -198,6 +209,7 @@ export function CartProvider({ children, locale }: { children: React.ReactNode; 
     removeFromCart,
     updateQuantity,
     clearCart,
+    formatPrice: formatPriceLocal
   };
   
   // Return empty provider during SSR to prevent hydration mismatches
@@ -209,6 +221,7 @@ export function CartProvider({ children, locale }: { children: React.ReactNode; 
           isOpen: false,
           isLoading: false,
           total: 0,
+          rates: { usd: 0.32, eur: 0.30 },
           itemCount: 0,
           openCart: () => {},
           closeCart: () => {},
@@ -217,6 +230,7 @@ export function CartProvider({ children, locale }: { children: React.ReactNode; 
           removeFromCart: async () => {},
           updateQuantity: async () => {},
           clearCart: () => {},
+          formatPrice: (p: any) => String(p) + ' TND'
         }}
       >
         {children}
