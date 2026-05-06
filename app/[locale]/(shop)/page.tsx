@@ -108,7 +108,7 @@ export default async function HomePage({
   return (
     <main className="min-h-screen bg-background">
       {/* Hero Section */}
-      <section id="home" className="relative block w-full p-0 mt-[96px] md:mt-[72px] mb-0 leading-[0] overflow-hidden">
+      <section id="home" className="relative block w-full p-0 mt-[100px] md:mt-[144px] mb-0 leading-[0] overflow-hidden">
         <img
           src="/media/images/background-image.jpg"
           alt="Hero"

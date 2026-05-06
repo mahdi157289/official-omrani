@@ -9,7 +9,17 @@ import { ShoppingCart, Menu, User, LogOut, Package, UserCircle, ShieldCheck, Fac
 import { useState, useEffect } from 'react';
 import { SearchBar } from './search-bar';
 import { useSession, signOut } from 'next-auth/react';
-import { Lantern3D, ParticleGlow } from './lantern-3d';
+import dynamic from 'next/dynamic';
+
+const Lantern3D = dynamic(() => import('./lantern-3d').then(mod => mod.Lantern3D), { 
+  ssr: false,
+  loading: () => null
+});
+
+const ParticleGlow = dynamic(() => import('./lantern-3d').then(mod => mod.ParticleGlow), {
+  ssr: false,
+  loading: () => null
+});
 // Removed Logo3D import - using 2D circular logo instead
 import { DecoSeparator } from './ui/deco-separator';
 import { useUI } from './providers/ui-provider';
@@ -123,7 +133,7 @@ export function Navigation() {
   if (!isMounted) {
     return (
       <nav 
-        className="fixed top-4 left-0 right-0 z-50 bg-[#437983] w-[88%] max-w-6xl mx-auto h-28 rounded-3xl border border-white/10 shadow-2xl"
+        className="fixed top-4 left-0 right-0 z-50 bg-[#437983] w-[88%] max-w-6xl mx-auto h-20 md:h-28 rounded-3xl border border-white/10 shadow-2xl"
         style={{ backgroundColor: '#437983' }}
       />
     );
@@ -170,7 +180,7 @@ export function Navigation() {
           className={`absolute top-0 left-0 w-full h-[300px] pointer-events-none overflow-hidden z-0 transition-opacity duration-1000 ease-in-out ${show3DItems && introFinished ? 'opacity-100' : 'opacity-0'
             }`}
         >
-          {show3DItems && introFinished && (
+          {show3DItems && (
             <>
               {/* Background Glow Particles */}
               <ParticleGlow />
@@ -196,7 +206,7 @@ export function Navigation() {
         </div>
 
         <div className="container mx-auto px-6 relative z-10">
-          <div className="flex items-center justify-between h-28 relative">
+          <div className="flex items-center justify-between h-20 md:h-28 relative">
 
             {/* Mobile Menu Button - Left */}
             <div className="md:hidden flex items-center z-20">
@@ -212,7 +222,7 @@ export function Navigation() {
             {/* Mobile Center Logo */}
             <div className="md:hidden absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
               <Link href={`/${locale}`} className="flex flex-col items-center justify-center transform hover:scale-105 transition-transform duration-300">
-                <div className="relative w-[80px] h-[80px] rounded-full border-2 border-[#D4AF37] shadow-lg overflow-hidden p-0 bg-[#00353F]">
+                <div className="relative w-[70px] h-[70px] rounded-full border-2 border-[#D4AF37] shadow-lg overflow-hidden p-0 bg-[#00353F]">
                   <Image
                     src="/media/logo.png"
                     alt="Makroudh Omrani"
@@ -315,10 +325,10 @@ export function Navigation() {
                     </button>
 
                     {userMenuOpen && (
-                      <div className={`absolute top-full mt-2 w-48 bg-white rounded-lg shadow-xl border py-2 ${locale === 'ar' ? 'left-0' : 'right-0'}`}>
+                      <div className={`absolute top-full mt-2 w-48 glass-card-effect rounded-lg shadow-xl border border-white/10 py-2 ${locale === 'ar' ? 'left-0' : 'right-0'}`}>
                         <Link
                           href={`/${locale}/profile`}
-                          className="flex items-center gap-3 px-4 py-3 text-sm font-bold text-gray-900 hover:bg-primary/5 hover:text-primary transition-all rounded-lg mx-2"
+                          className="flex items-center gap-3 px-4 py-3 text-sm font-bold text-white hover:bg-white/10 transition-all rounded-lg mx-2"
                           onClick={() => setUserMenuOpen(false)}
                         >
                           <UserCircle className="w-5 h-5" />
@@ -329,7 +339,7 @@ export function Navigation() {
                             signOut();
                             setUserMenuOpen(false);
                           }}
-                          className="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-red-600 hover:bg-red-50 transition-all rounded-lg mx-2"
+                          className="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-red-400 hover:bg-red-500/10 transition-all rounded-lg mx-2"
                         >
                           <LogOut className="w-5 h-5" />
                           {t('logout')}
@@ -353,65 +363,65 @@ export function Navigation() {
 
           {/* Mobile Menu */}
           {mobileMenuOpen && (
-            <div className="md:hidden py-4 border-t border-white/10">
+            <div className="md:hidden py-4 border-t border-white/10 glass-card-effect rounded-b-3xl px-6 -mx-6 mt-0">
               <Link
                 href={`/${locale}/shop`}
-                className="block py-2 text-white hover:text-[#D4AF37]"
+                className="block py-3 text-white hover:text-[#D4AF37] border-b border-white/5"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 {t('shop')}
               </Link>
               <Link
                 href={`/${locale}/shop?type=product`}
-                className="block py-2 text-white hover:text-[#D4AF37]"
+                className="block py-3 text-white hover:text-[#D4AF37] border-b border-white/5"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 {t('products')}
               </Link>
               <Link
                 href={`/${locale}/shop?type=package`}
-                className="block py-2 text-white hover:text-[#D4AF37]"
+                className="block py-3 text-white hover:text-[#D4AF37] border-b border-white/5"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 {t('packages')}
               </Link>
               <Link
                 href={`/${locale}#location`}
-                className="block py-2 text-white hover:text-[#D4AF37]"
+                className="block py-3 text-white hover:text-[#D4AF37] border-b border-white/5"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 {t('location')}
               </Link>
 
-              <div className="border-t border-white/10 my-2 pt-2">
+              <div className="my-2 pt-2">
                 {session ? (
-                  <>
+                  <div className="space-y-1">
                     <div className="py-2 font-semibold text-primary">{session.user?.name}</div>
                     <Link
                       href={`/${locale}/profile`}
-                      className="block py-2 text-white hover:text-primary"
+                      className="block py-3 text-white hover:text-[#D4AF37] border-b border-white/5"
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       {t('profile')}
                     </Link>
                     <Link
                       href={`/${locale}/orders`}
-                      className="block py-2 text-white hover:text-primary"
+                      className="block py-3 text-white hover:text-[#D4AF37] border-b border-white/5"
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       {t('orders')}
                     </Link>
                     <button
                       onClick={() => signOut()}
-                      className="block w-full text-start py-2 text-red-600 hover:text-red-700"
+                      className="block w-full text-start py-3 text-red-400 hover:text-red-500"
                     >
                       {t('logout')}
                     </button>
-                  </>
+                  </div>
                 ) : (
                   <Link
                     href={`/${locale}/login`}
-                    className="block py-2 text-primary font-semibold"
+                    className="block py-3 text-[#D4AF37] font-bold text-lg"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     {t('loginButton')}

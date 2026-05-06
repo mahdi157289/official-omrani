@@ -47,7 +47,7 @@ export default async function OrderDetailsPage({
       <div className="mb-6">
         <Link
           href={`/${locale}/admin/orders`}
-          className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4"
+          className="flex items-center gap-2 text-white/60 hover:text-white mb-4"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Orders
@@ -55,10 +55,10 @@ export default async function OrderDetailsPage({
 
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">
+            <h1 className="text-3xl font-bold text-white">
               Order #{order.orderNumber}
             </h1>
-            <p className="text-gray-500 mt-1">
+            <p className="text-white/50 mt-1">
               Placed on {new Date(order.createdAt).toLocaleString()}
             </p>
           </div>
@@ -71,11 +71,11 @@ export default async function OrderDetailsPage({
         {/* Main Content */}
         <div className="lg:col-span-2 space-y-6">
           {/* Items */}
-          <div className="bg-white rounded-lg shadow overflow-hidden">
-            <div className="px-6 py-4 border-b border-gray-200">
-              <h2 className="font-semibold text-lg text-gray-900">Order Items</h2>
+          <div className="glass-card-effect rounded-lg shadow overflow-hidden border border-white/10">
+            <div className="px-6 py-4 border-b border-white/5">
+              <h2 className="font-semibold text-lg text-white">Order Items</h2>
             </div>
-            <div className="divide-y divide-gray-200">
+            <div className="divide-y divide-white/5">
               {order.items.map((item) => {
                 const productName = item.product
                   ? `${item.product.nameFr} / ${item.product.nameAr}`
@@ -91,17 +91,17 @@ export default async function OrderDetailsPage({
                         <span className="text-xs text-gray-500">Image</span>
                       </div>
                       <div>
-                        <p className="font-medium text-gray-900">
+                        <p className="font-medium text-white">
                           {productName}
                         </p>
-                        <p className="text-sm text-gray-500">
+                        <p className="text-sm text-white/50">
                           {item.variantNameFr ? `${item.variantNameFr}` : ''}
                           {item.quantity} x {formatPrice(Number(item.unitPrice))}
                         </p>
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="font-medium text-gray-900">
+                      <p className="font-medium text-white">
                         {formatPrice(Number(item.totalPrice))}
                       </p>
                     </div>
@@ -109,16 +109,16 @@ export default async function OrderDetailsPage({
                 );
               })}
             </div>
-            <div className="bg-gray-50 px-6 py-4">
-              <div className="flex justify-between mb-2 text-sm text-gray-600">
+            <div className="bg-white/5 px-6 py-4">
+              <div className="flex justify-between mb-2 text-sm text-white/60">
                 <span>Subtotal</span>
                 <span>{formatPrice(Number(order.subtotal))}</span>
               </div>
-              <div className="flex justify-between mb-2 text-sm text-gray-600">
+              <div className="flex justify-between mb-2 text-sm text-white/60">
                 <span>Delivery Fee</span>
                 <span>{formatPrice(Number(order.deliveryFee))}</span>
               </div>
-              <div className="flex justify-between pt-4 border-t border-gray-200 font-bold text-lg text-gray-900">
+              <div className="flex justify-between pt-4 border-t border-white/10 font-bold text-lg text-white">
                 <span>Total</span>
                 <span>{formatPrice(Number(order.totalAmount))}</span>
               </div>
@@ -129,13 +129,13 @@ export default async function OrderDetailsPage({
         {/* Sidebar */}
         <div className="space-y-6">
           {/* Customer Details */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="font-semibold text-lg text-gray-900 mb-4">Customer Details</h2>
+          <div className="glass-card-effect rounded-lg shadow p-6 border border-white/10">
+            <h2 className="font-semibold text-lg text-white mb-4">Customer Details</h2>
             <div className="space-y-4">
               <div className="flex items-start gap-3">
-                <User className="w-5 h-5 text-gray-400 mt-0.5" />
+                <User className="w-5 h-5 text-white/40 mt-0.5" />
                 <div>
-                  <p className="font-medium text-gray-900">{order.customerName}</p>
+                  <p className="font-medium text-white">{order.customerName}</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
@@ -147,9 +147,9 @@ export default async function OrderDetailsPage({
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <Phone className="w-5 h-5 text-gray-400 mt-0.5" />
+                <Phone className="w-5 h-5 text-white/40 mt-0.5" />
                 <div>
-                  <a href={`tel:${order.customerPhone}`} className="text-gray-600 hover:text-gray-900">
+                  <a href={`tel:${order.customerPhone}`} className="text-white/60 hover:text-white">
                     {order.customerPhone}
                   </a>
                 </div>
@@ -158,11 +158,11 @@ export default async function OrderDetailsPage({
           </div>
 
           {/* Delivery Details */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="font-semibold text-lg text-gray-900 mb-4">Delivery Address</h2>
+          <div className="glass-card-effect rounded-lg shadow p-6 border border-white/10">
+            <h2 className="font-semibold text-lg text-white mb-4">Delivery Address</h2>
             <div className="flex items-start gap-3">
-              <MapPin className="w-5 h-5 text-gray-400 mt-0.5" />
-              <p className="text-gray-600 leading-relaxed">
+              <MapPin className="w-5 h-5 text-white/40 mt-0.5" />
+              <p className="text-white/60 leading-relaxed">
                 {order.deliveryAddress}
               </p>
             </div>
@@ -170,9 +170,9 @@ export default async function OrderDetailsPage({
 
           {/* Notes */}
           {order.customerNotes && (
-            <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="font-semibold text-lg text-gray-900 mb-4">Customer Notes</h2>
-              <p className="text-gray-600 italic">"{order.customerNotes}"</p>
+            <div className="glass-card-effect rounded-lg shadow p-6 border border-white/10">
+              <h2 className="font-semibold text-lg text-white mb-4">Customer Notes</h2>
+              <p className="text-white/60 italic">"{order.customerNotes}"</p>
             </div>
           )}
         </div>

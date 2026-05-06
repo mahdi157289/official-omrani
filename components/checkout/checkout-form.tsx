@@ -98,7 +98,7 @@ export function CheckoutForm({ locale }: { locale: string }) {
       {/* Form */}
       <div className="lg:col-span-2">
         {isCanceled && (
-          <div className="mb-6 p-4 bg-red-50 text-red-800 rounded-xl border border-red-200">
+          <div className="mb-6 p-4 bg-red-500/10 text-red-200 rounded-xl border border-red-500/20">
             {locale === 'ar'
               ? 'تم إلغاء العملية، يمكنك المحاولة مرة أخرى.'
               : locale === 'fr'
@@ -108,9 +108,9 @@ export function CheckoutForm({ locale }: { locale: string }) {
         )}
 
         {/* COD Banner */}
-        <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-xl flex items-center gap-3">
-          <Truck className="w-6 h-6 text-amber-600 flex-shrink-0" />
-          <p className="text-amber-800 font-medium text-sm">
+        <div className="mb-6 p-4 bg-amber-500/10 border border-amber-500/20 rounded-xl flex items-center gap-3">
+          <Truck className="w-6 h-6 text-amber-500 flex-shrink-0" />
+          <p className="text-amber-200 font-medium text-sm">
             {locale === 'ar'
               ? '💰 الدفع عند الاستلام — لا حاجة لبطاقة بنكية'
               : locale === 'fr'
@@ -119,15 +119,15 @@ export function CheckoutForm({ locale }: { locale: string }) {
           </p>
         </div>
 
-        <form id="checkout-form" onSubmit={handleSubmit} className="bg-white p-8 rounded-2xl shadow-md space-y-6">
-          <h2 className="text-xl font-bold mb-2 text-black flex items-center gap-2">
+        <form id="checkout-form" onSubmit={handleSubmit} className="glass-card-effect p-8 rounded-2xl shadow-md space-y-6 border border-white/10">
+          <h2 className="text-xl font-bold mb-2 text-white flex items-center gap-2">
             <MapPin className="w-5 h-5 text-primary" />
             {t('shippingDetails')}
           </h2>
 
           {/* Name */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">
+            <label className="block text-sm font-semibold text-white/70 mb-1">
               <User className="w-4 h-4 inline mr-1" />
               {t('fullName')} *
             </label>
@@ -138,13 +138,13 @@ export function CheckoutForm({ locale }: { locale: string }) {
               onChange={handleChange}
               required
               placeholder={locale === 'ar' ? 'الاسم الكامل' : locale === 'fr' ? 'Nom complet' : 'Full name'}
-              className="w-full border border-gray-300 rounded-xl px-4 py-3 text-black bg-gray-50 focus:bg-white focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
+              className="w-full border border-white/10 rounded-xl px-4 py-3 text-white bg-white/5 focus:bg-white/10 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
             />
           </div>
 
           {/* Phone */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">
+            <label className="block text-sm font-semibold text-white/70 mb-1">
               <Phone className="w-4 h-4 inline mr-1" />
               {t('phone')} *
             </label>
@@ -155,13 +155,13 @@ export function CheckoutForm({ locale }: { locale: string }) {
               onChange={handleChange}
               required
               placeholder={locale === 'ar' ? 'مثال: 25123456' : 'Ex: 25 123 456'}
-              className="w-full border border-gray-300 rounded-xl px-4 py-3 text-black bg-gray-50 focus:bg-white focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
+              className="w-full border border-white/10 rounded-xl px-4 py-3 text-white bg-white/5 focus:bg-white/10 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
             />
           </div>
 
           {/* Address */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">
+            <label className="block text-sm font-semibold text-white/70 mb-1">
               {t('address')} *
             </label>
             <input
@@ -171,13 +171,13 @@ export function CheckoutForm({ locale }: { locale: string }) {
               onChange={handleChange}
               required
               placeholder={locale === 'ar' ? 'الشارع، الحي' : locale === 'fr' ? 'Rue, quartier' : 'Street, district'}
-              className="w-full border border-gray-300 rounded-xl px-4 py-3 text-black bg-gray-50 focus:bg-white focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
+              className="w-full border border-white/10 rounded-xl px-4 py-3 text-white bg-white/5 focus:bg-white/10 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
             />
           </div>
 
           {/* City */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">
+            <label className="block text-sm font-semibold text-white/70 mb-1">
               {t('city')} *
             </label>
             <input
@@ -187,13 +187,13 @@ export function CheckoutForm({ locale }: { locale: string }) {
               onChange={handleChange}
               required
               placeholder={locale === 'ar' ? 'المدينة' : locale === 'fr' ? 'Ville' : 'City'}
-              className="w-full border border-gray-300 rounded-xl px-4 py-3 text-black bg-gray-50 focus:bg-white focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
+              className="w-full border border-white/10 rounded-xl px-4 py-3 text-white bg-white/5 focus:bg-white/10 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
             />
           </div>
 
           {/* Notes */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">
+            <label className="block text-sm font-semibold text-white/70 mb-1">
               {t('notes')}
             </label>
             <textarea
@@ -202,7 +202,7 @@ export function CheckoutForm({ locale }: { locale: string }) {
               onChange={handleChange}
               rows={3}
               placeholder={locale === 'ar' ? 'أي ملاحظات إضافية؟' : locale === 'fr' ? 'Notes supplémentaires?' : 'Any additional notes?'}
-              className="w-full border border-gray-300 rounded-xl px-4 py-3 text-black bg-gray-50 focus:bg-white focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
+              className="w-full border border-white/10 rounded-xl px-4 py-3 text-white bg-white/5 focus:bg-white/10 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
             />
           </div>
         </form>
@@ -210,39 +210,39 @@ export function CheckoutForm({ locale }: { locale: string }) {
 
       {/* Order Summary */}
       <div className="lg:col-span-1">
-        <div className="bg-white p-6 rounded-2xl shadow-md sticky top-24 text-black">
-          <h2 className="text-xl font-bold mb-4 text-black flex items-center gap-2">
+        <div className="glass-card-effect p-6 rounded-2xl shadow-md sticky top-24 text-white border border-white/10">
+          <h2 className="text-xl font-bold mb-4 text-white flex items-center gap-2">
             <ShoppingBag className="w-5 h-5 text-primary" />
             {t('orderSummary')}
           </h2>
 
           <div className="space-y-3 mb-6">
             {cartItems.map((item) => (
-              <div key={item.id} className="flex justify-between text-sm font-medium text-gray-800">
+              <div key={item.id} className="flex justify-between text-sm font-medium text-white/70">
                 <span className="flex-1 pr-2">{item.productName} × {item.quantity}</span>
-                <span className="font-semibold text-gray-900 whitespace-nowrap">{formatPrice(item.total)}</span>
+                <span className="font-semibold text-white whitespace-nowrap">{formatPrice(item.total)}</span>
               </div>
             ))}
           </div>
 
-          <div className="border-t pt-4 space-y-2">
-            <div className="flex justify-between font-semibold text-gray-600">
+          <div className="border-t border-white/10 pt-4 space-y-2">
+            <div className="flex justify-between font-semibold text-white/60">
               <span>{t('subtotal')}</span>
               <span>{formatPrice(subtotal)}</span>
             </div>
-            <div className="flex justify-between font-semibold text-gray-600">
+            <div className="flex justify-between font-semibold text-white/60">
               <span>{t('delivery')}</span>
               <span>{formatPrice(deliveryFee)}</span>
             </div>
-            <div className="flex justify-between font-bold text-lg pt-2 border-t text-black">
+            <div className="flex justify-between font-bold text-lg pt-2 border-t border-white/10 text-white">
               <span>{t('total')}</span>
               <span className="text-primary">{formatPrice(total)}</span>
             </div>
           </div>
 
           {/* COD note */}
-          <div className="mt-4 p-3 bg-green-50 rounded-xl border border-green-200 text-center">
-            <p className="text-green-700 text-xs font-semibold">
+          <div className="mt-4 p-3 bg-green-500/10 rounded-xl border border-green-500/20 text-center">
+            <p className="text-green-200 text-xs font-semibold">
               {locale === 'ar' ? '💵 الدفع نقداً عند التسليم' : locale === 'fr' ? '💵 Paiement en espèces à la livraison' : '💵 Pay cash on delivery'}
             </p>
           </div>

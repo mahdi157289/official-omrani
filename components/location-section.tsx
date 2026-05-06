@@ -32,12 +32,12 @@ export function LocationSection({ locale }: LocationSectionProps) {
 
                     {/* --- Location Selector --- */}
                     <FadeIn direction="right" delay={0.1}>
-                        <div className="bg-[#F2C782] p-5 rounded-2xl shadow-md gold-border">
+                        <div className="glass-card-effect p-5 rounded-2xl shadow-md gold-border">
                             <div className="flex items-center gap-3 mb-4">
-                                <div className="p-2.5 bg-primary/10 rounded-full">
+                                <div className="p-2.5 bg-primary/10 rounded-full border border-primary/20">
                                     <MapPin className="w-5 h-5 text-primary" />
                                 </div>
-                                <h4 className="text-lg font-bold text-primary">
+                                <h4 className="text-lg font-bold text-white">
                                     {locale === 'ar' ? 'فروعنا' : locale === 'fr' ? 'Nos Adresses' : 'Our Branches'}
                                 </h4>
                             </div>
@@ -48,13 +48,13 @@ export function LocationSection({ locale }: LocationSectionProps) {
                                         onClick={() => setActiveMap('tunis')}
                                         className={`w-full p-4 rounded-xl border-2 text-left transition-all duration-300 font-semibold flex flex-col gap-1 group hover:shadow-md ${activeMap === 'tunis'
                                                 ? 'border-primary bg-primary text-white shadow-lg scale-[1.02]'
-                                                : 'border-primary/30 bg-white/60 text-black hover:border-primary hover:bg-white'
+                                                : 'border-white/10 bg-white/5 text-white hover:border-primary hover:bg-white/10'
                                             }`}
                                     >
                                         <span className="text-base font-black">
                                             🏙️ {locale === 'ar' ? 'تونس العاصمة' : locale === 'fr' ? 'Tunis' : 'Tunis'}
                                         </span>
-                                        <span className={`text-xs leading-relaxed ${activeMap === 'tunis' ? 'text-white/80' : 'text-gray-600'}`}>
+                                        <span className={`text-xs leading-relaxed ${activeMap === 'tunis' ? 'text-white/80' : 'text-white/60'}`}>
                                             {locale === 'ar' ? 'العوينة' : 'L\'Aouina'}
                                         </span>
                                     </button>
@@ -75,13 +75,13 @@ export function LocationSection({ locale }: LocationSectionProps) {
                                         onClick={() => setActiveMap('kairouan')}
                                         className={`w-full p-4 rounded-xl border-2 text-left transition-all duration-300 font-semibold flex flex-col gap-1 group hover:shadow-md ${activeMap === 'kairouan'
                                                 ? 'border-primary bg-primary text-white shadow-lg scale-[1.02]'
-                                                : 'border-primary/30 bg-white/60 text-black hover:border-primary hover:bg-white'
+                                                : 'border-white/10 bg-white/5 text-white hover:border-primary hover:bg-white/10'
                                             }`}
                                     >
                                         <span className="text-base font-black">
                                             🕌 {locale === 'ar' ? 'القيروان' : locale === 'fr' ? 'Kairouan' : 'Kairouan'}
                                         </span>
-                                        <span className={`text-xs leading-relaxed ${activeMap === 'kairouan' ? 'text-white/80' : 'text-gray-600'}`}>
+                                        <span className={`text-xs leading-relaxed ${activeMap === 'kairouan' ? 'text-white/80' : 'text-white/60'}`}>
                                             {locale === 'ar' ? 'وسط المدينة' : 'Centre-ville'}
                                         </span>
                                     </button>
@@ -101,16 +101,16 @@ export function LocationSection({ locale }: LocationSectionProps) {
 
                     {/* Hours */}
                     <FadeIn direction="right" delay={0.2}>
-                        <div className="bg-[#F2C782] p-5 rounded-2xl shadow-md gold-border hover:shadow-xl transition-all duration-300">
+                        <div className="glass-card-effect p-5 rounded-2xl shadow-md gold-border hover:shadow-xl transition-all duration-300">
                             <div className="flex items-center gap-3 mb-3">
-                                <div className="p-2.5 bg-primary/10 rounded-full">
+                                <div className="p-2.5 bg-primary/10 rounded-full border border-primary/20">
                                     <Clock className="w-5 h-5 text-primary" />
                                 </div>
-                                <h4 className="text-lg font-bold text-primary">
+                                <h4 className="text-lg font-bold text-white">
                                     {locale === 'ar' ? 'ساعات العمل' : locale === 'fr' ? 'Horaires' : 'Working Hours'}
                                 </h4>
                             </div>
-                            <p className="text-black text-lg font-semibold">
+                            <p className="text-white text-lg font-semibold">
                                 {locale === 'ar' ? 'يومياً: 8:00 صباحاً - 11:00 مساءً' : locale === 'fr' ? 'Tous les jours: 08:00 – 23:00' : 'Daily: 08:00 AM – 11:00 PM'}
                             </p>
                         </div>
@@ -118,17 +118,17 @@ export function LocationSection({ locale }: LocationSectionProps) {
 
                     {/* Contact */}
                     <FadeIn direction="right" delay={0.3}>
-                        <div className="bg-[#F2C782] p-5 rounded-2xl shadow-md gold-border hover:shadow-xl transition-all duration-300">
+                        <div className="glass-card-effect p-5 rounded-2xl shadow-md gold-border hover:shadow-xl transition-all duration-300">
                             <div className="flex items-center gap-3 mb-3">
-                                <div className="p-2.5 bg-primary/10 rounded-full">
+                                <div className="p-2.5 bg-primary/10 rounded-full border border-primary/20">
                                     <Phone className="w-5 h-5 text-primary" />
                                 </div>
-                                <h4 className="text-lg font-bold text-primary">
+                                <h4 className="text-lg font-bold text-white">
                                     {locale === 'ar' ? 'اتصل بنا' : locale === 'fr' ? 'Contact' : 'Contact Us'}
                                 </h4>
                             </div>
                             <div className="space-y-2">
-                                <a href="tel:+21694700009" className="flex items-center gap-2 text-black text-lg hover:text-primary transition-colors font-semibold">
+                                <a href="tel:+21694700009" className="flex items-center gap-2 text-white text-lg hover:text-primary transition-colors font-semibold">
                                     <Phone className="w-4 h-4 flex-shrink-0" />
                                     94 700 009
                                 </a>
@@ -142,16 +142,16 @@ export function LocationSection({ locale }: LocationSectionProps) {
                     <FadeIn direction="up" delay={0.4} className="flex-grow">
                         <div className="h-full min-h-[480px] w-full rounded-2xl overflow-hidden shadow-2xl gold-border relative group">
                             {/* Map toggles at top */}
-                            <div className="absolute top-3 left-1/2 -translate-x-1/2 z-10 flex gap-2 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1.5 shadow-lg">
+                            <div className="absolute top-3 left-1/2 -translate-x-1/2 z-10 flex gap-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-3 py-1.5 shadow-lg">
                                 <button
                                     onClick={() => setActiveMap('tunis')}
-                                    className={`px-4 py-1.5 rounded-full text-sm font-bold transition-all ${activeMap === 'tunis' ? 'bg-primary text-white shadow' : 'text-gray-600 hover:text-primary'}`}
+                                    className={`px-4 py-1.5 rounded-full text-sm font-bold transition-all ${activeMap === 'tunis' ? 'bg-primary text-white shadow' : 'text-white/60 hover:text-primary'}`}
                                 >
                                     🏙️ Tunis
                                 </button>
                                 <button
                                     onClick={() => setActiveMap('kairouan')}
-                                    className={`px-4 py-1.5 rounded-full text-sm font-bold transition-all ${activeMap === 'kairouan' ? 'bg-primary text-white shadow' : 'text-gray-600 hover:text-primary'}`}
+                                    className={`px-4 py-1.5 rounded-full text-sm font-bold transition-all ${activeMap === 'kairouan' ? 'bg-primary text-white shadow' : 'text-white/60 hover:text-primary'}`}
                                 >
                                     🕌 Kairouan
                                 </button>
@@ -175,7 +175,7 @@ export function LocationSection({ locale }: LocationSectionProps) {
                                 href={activeMap === 'tunis' ? TUNIS_MAP_URL : KAIROUAN_MAP_URL}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="absolute bottom-4 right-4 z-10 flex items-center gap-2 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full shadow-lg text-sm font-semibold text-primary hover:bg-primary hover:text-white transition-all pointer-events-auto"
+                                className="absolute bottom-4 right-4 z-10 flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 px-4 py-2 rounded-full shadow-lg text-sm font-semibold text-white hover:bg-primary hover:text-white transition-all pointer-events-auto"
                             >
                                 <ExternalLink className="w-4 h-4" />
                                 {locale === 'ar' ? 'فتح الخرائط' : 'Ouvrir Maps'}

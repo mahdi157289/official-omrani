@@ -73,11 +73,11 @@ export function ProductCard({ product, locale }: ProductCardProps) {
 
   return (
     <div 
-      className="bg-[#F2C782] rounded-2xl shadow-lg overflow-hidden group flex flex-col h-full gold-border"
+      className="glass-card-effect rounded-2xl shadow-lg overflow-hidden group flex flex-col h-full gold-border"
       onMouseEnter={handlePrefetch}
       onTouchStart={handlePrefetch}
     >
-      <div className="relative w-full h-64 overflow-hidden bg-gray-50">
+      <div className="relative w-full h-64 overflow-hidden bg-white/5">
         <Link href={`/${locale}/shop/${product.slug}`} prefetch={true} className="relative block w-full h-full">
           {product.images[0] ? (
             <Image
@@ -98,37 +98,37 @@ export function ProductCard({ product, locale }: ProductCardProps) {
           {/* Overlay gradient on hover */}
           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
         </Link>
-        <div className="absolute top-0 right-0 h-full w-20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 z-40 pointer-events-none group-hover:pointer-events-auto">
-          <div className="flex flex-col gap-3 mr-4">
+        <div className="absolute top-0 right-0 h-full w-16 md:w-20 flex items-center justify-center opacity-100 lg:opacity-0 group-hover:opacity-100 transition-all duration-300 z-40 pointer-events-auto">
+          <div className="flex flex-col gap-2 md:gap-3 mr-2 md:mr-4">
             <Link
               href={`/${locale}/shop/${product.slug}`}
               prefetch={true}
-              className="w-11 h-11 rounded-full bg-white text-gray-900 shadow-xl hover:bg-primary hover:text-white flex items-center justify-center transition-all hover:scale-110 active:scale-90"
+              className="w-10 h-10 md:w-11 md:h-11 rounded-full bg-white/10 backdrop-blur-md text-white shadow-xl hover:bg-primary hover:text-white flex items-center justify-center transition-all hover:scale-110 active:scale-90 border border-white/20"
               aria-label={t('viewDetails')}
             >
-              <Eye className="w-5 h-5" />
+              <Eye className="w-4 h-4 md:w-5 md:h-5" />
             </Link>
             <button
               type="button"
-              className="w-11 h-11 rounded-full bg-white text-gray-900 shadow-xl hover:bg-primary hover:text-white flex items-center justify-center transition-all hover:scale-110 active:scale-90"
+              className="w-10 h-10 md:w-11 md:h-11 rounded-full bg-white/10 backdrop-blur-md text-white shadow-xl hover:bg-primary hover:text-white flex items-center justify-center transition-all hover:scale-110 active:scale-90 border border-white/20"
               aria-label="Hear Product"
             >
-              <Ear className="w-5 h-5" />
+              <Ear className="w-4 h-4 md:w-5 md:h-5" />
             </button>
             {!isOutOfStock ? (
               <AddToCartButton
                 productId={product.id}
                 locale={locale}
                 compact={true}
-                className="w-11 h-11 rounded-full bg-secondary text-white shadow-xl flex items-center justify-center hover:scale-110 active:scale-90 transition-all"
+                className="w-10 h-10 md:w-11 md:h-11 rounded-full bg-secondary text-white shadow-xl flex items-center justify-center hover:scale-110 active:scale-90 transition-all"
               />
             ) : (
               <button
                 disabled
-                className="w-11 h-11 rounded-full bg-gray-200 text-gray-400 flex items-center justify-center cursor-not-allowed"
+                className="w-10 h-10 md:w-11 md:h-11 rounded-full bg-gray-200 text-gray-400 flex items-center justify-center cursor-not-allowed"
                 aria-label="Unavailable"
               >
-                <ShoppingCart className="w-5 h-5" />
+                <ShoppingCart className="w-4 h-4 md:w-5 md:h-5" />
               </button>
             )}
           </div>
@@ -162,7 +162,7 @@ export function ProductCard({ product, locale }: ProductCardProps) {
         {/* Category section removed */}
 
         <Link href={`/${locale}/shop/${product.slug}`} className="block mb-1 group-hover:text-primary transition-colors">
-          <h3 className="font-bold text-2xl md:text-3xl leading-tight line-clamp-2 min-h-[4rem] text-gray-900 text-center">
+          <h3 className="font-bold text-2xl md:text-3xl leading-tight line-clamp-2 min-h-[4rem] text-white text-center">
             {name}
           </h3>
         </Link>
@@ -171,12 +171,12 @@ export function ProductCard({ product, locale }: ProductCardProps) {
         <div className="w-16 h-1 bg-[#346977] mx-auto mb-4 rounded-full opacity-60" />
 
         {description && (
-          <p className="text-lg mb-3 line-clamp-2 text-center leading-relaxed" style={{ color: '#346977' }}>
+          <p className="text-lg mb-3 line-clamp-2 text-center leading-relaxed text-white/80">
             {description}
           </p>
         )}
         {ingredients && (
-          <p className="text-lg text-black mb-4 line-clamp-2 text-center">
+          <p className="text-lg text-white/90 mb-4 line-clamp-2 text-center">
             {ingredients}
           </p>
         )}
@@ -184,7 +184,7 @@ export function ProductCard({ product, locale }: ProductCardProps) {
           {formatPrice(product.basePrice)}
         </p>
 
-        <div className="pt-4 border-t border-gray-100">
+        <div className="pt-4 border-t border-white/10">
           {!isOutOfStock ? (
             <AddToCartButton
               productId={product.id}

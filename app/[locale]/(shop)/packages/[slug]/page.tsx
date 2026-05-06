@@ -39,7 +39,7 @@ export default async function PackageDetailPage({
 
   return (
     <main className="min-h-screen bg-background">
-      <div className="w-[95%] max-w-7xl mx-auto pt-40 pb-8">
+      <div className="w-[95%] max-w-7xl mx-auto pt-32 md:pt-40 pb-8">
         <GlassCard>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
             {/* Package Image */}

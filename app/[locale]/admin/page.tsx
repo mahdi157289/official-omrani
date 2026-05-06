@@ -106,29 +106,27 @@ export default async function AdminDashboard() {
       {/* Live Pending Orders Panel */}
       <AdminPendingOrdersPanel />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-8">
         {statCards.map((stat) => {
           const Icon = stat.icon;
           return (
-            <div key={stat.title} className="bg-white rounded-lg shadow p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600 mb-1">{stat.title}</p>
-                  <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
-                </div>
-                <div className={`${stat.color} p-3 rounded-lg`}>
-                  <Icon className="w-6 h-6 text-white" />
-                </div>
+            <div key={stat.title} className="glass-card-effect rounded-xl md:rounded-lg shadow p-4 md:p-6 flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-0 border-white/10 hover:border-white/20 transition-all duration-300">
+              <div>
+                <p className="text-xs md:text-sm text-white/60 mb-1 line-clamp-1" title={stat.title}>{stat.title}</p>
+                <p className="text-lg md:text-2xl font-bold text-white">{stat.value}</p>
+              </div>
+              <div className={`${stat.color} p-2 md:p-3 rounded-lg self-start md:self-auto shadow-lg`}>
+                <Icon className="w-5 h-5 md:w-6 md:h-6 text-white" />
               </div>
             </div>
           );
         })}
       </div>
 
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="bg-gray-50/50 px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-          <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-             <span className="p-1.5 bg-blue-100 text-blue-600 rounded-lg">
+      <div className="glass-card-effect rounded-2xl shadow-sm border border-white/10 overflow-hidden">
+        <div className="bg-white/5 px-6 py-4 border-b border-white/10 flex items-center justify-between">
+          <h2 className="text-lg font-bold text-white flex items-center gap-2">
+             <span className="p-1.5 bg-blue-500/20 text-blue-400 rounded-lg">
                 <Package className="w-4 h-4" />
              </span>
              {labels.confirmedTitle}
@@ -138,57 +136,104 @@ export default async function AdminDashboard() {
           </Link>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50/30">
+        {/* Mobile View: Cards */}
+        <div className="md:hidden divide-y divide-white/5">
+          {stats.recentConfirmedOrders.map((order) => (
+            <div key={order.id} className="p-4 bg-transparent space-y-3">
+              <div className="flex justify-between items-start">
+                <div>
+                  <div className="font-bold text-sm text-white">#{order.orderNumber}</div>
+                  <div className="text-xs text-white/50">{new Date(order.createdAt).toLocaleDateString()}</div>
+                </div>
+                <span
+                  className={`px-2.5 py-1 text-[10px] font-bold rounded-full ${order.status === 'DELIVERED'
+                    ? 'bg-green-500/20 text-green-400'
+                    : order.status === 'CONFIRMED'
+                      ? 'bg-blue-500/20 text-blue-400'
+                      : order.status === 'CANCELLED'
+                      ? 'bg-red-500/20 text-red-400'
+                      : 'bg-yellow-500/20 text-yellow-400'
+                    }`}
+                >
+                  {t(order.status.toLowerCase())}
+                </span>
+              </div>
+              
+              <div className="flex justify-between items-center text-sm">
+                <span className="font-medium text-white/80 line-clamp-1">{order.customerName}</span>
+                <span className="font-bold text-white">{formatPrice(Number(order.totalAmount))}</span>
+              </div>
+
+              <div className="pt-2 border-t border-white/5 flex justify-end">
+                <Link
+                  href={`/${locale}/admin/orders/${order.id}`}
+                  className="text-xs font-bold text-primary bg-primary/10 px-4 py-2 rounded-lg"
+                >
+                  {t('view')}
+                </Link>
+              </div>
+            </div>
+          ))}
+          {stats.recentConfirmedOrders.length === 0 && (
+            <div className="p-8 text-center text-white/40 italic">
+              <Package className="w-8 h-8 mx-auto mb-2 opacity-20" />
+              {t('noOrders')}
+            </div>
+          )}
+        </div>
+
+        {/* Desktop View: Table */}
+        <div className="hidden md:block overflow-x-auto">
+          <table className="min-w-full divide-y divide-white/5">
+            <thead className="bg-white/5">
               <tr>
-                <th className="px-6 py-3 text-start text-xs font-bold text-gray-400 uppercase tracking-wider">
+                <th className="px-6 py-3 text-start text-xs font-bold text-white/40 uppercase tracking-wider">
                   {t('orderId')}
                 </th>
-                <th className="px-6 py-3 text-start text-xs font-bold text-gray-400 uppercase tracking-wider">
+                <th className="px-6 py-3 text-start text-xs font-bold text-white/40 uppercase tracking-wider">
                   {t('customer')}
                 </th>
-                <th className="px-6 py-3 text-start text-xs font-bold text-gray-400 uppercase tracking-wider">
+                <th className="px-6 py-3 text-start text-xs font-bold text-white/40 uppercase tracking-wider">
                   {t('total')}
                 </th>
-                <th className="px-6 py-3 text-start text-xs font-bold text-gray-400 uppercase tracking-wider">
+                <th className="px-6 py-3 text-start text-xs font-bold text-white/40 uppercase tracking-wider">
                   {t('status')}
                 </th>
-                <th className="px-6 py-3 text-start text-xs font-bold text-gray-400 uppercase tracking-wider">
+                <th className="px-6 py-3 text-start text-xs font-bold text-white/40 uppercase tracking-wider">
                   {t('date')}
                 </th>
-                <th className="px-6 py-3 text-end text-xs font-bold text-gray-400 uppercase tracking-wider">
+                <th className="px-6 py-3 text-end text-xs font-bold text-white/40 uppercase tracking-wider">
                   {t('action')}
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-100">
+            <tbody className="divide-y divide-white/5">
               {stats.recentConfirmedOrders.map((order) => (
-                <tr key={order.id} className="hover:bg-gray-50/80 transition-colors">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">
+                <tr key={order.id} className="hover:bg-white/5 transition-colors">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-white">
                     #{order.orderNumber}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 font-medium">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-white/70 font-medium">
                     {order.customerName}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-bold">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-white font-bold">
                     {formatPrice(Number(order.totalAmount))}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span
                       className={`px-3 py-1 text-xs font-bold rounded-full ${order.status === 'DELIVERED'
-                        ? 'bg-green-100 text-green-700'
+                        ? 'bg-green-500/20 text-green-400'
                         : order.status === 'CONFIRMED'
-                          ? 'bg-blue-100 text-blue-700'
+                          ? 'bg-blue-500/20 text-blue-400'
                           : order.status === 'CANCELLED'
-                          ? 'bg-red-100 text-red-700'
-                          : 'bg-yellow-100 text-yellow-700'
+                          ? 'bg-red-500/20 text-red-400'
+                          : 'bg-yellow-500/20 text-yellow-400'
                         }`}
                     >
                       {t(order.status.toLowerCase())}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-white/50">
                     {new Date(order.createdAt).toLocaleDateString()}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
@@ -204,7 +249,7 @@ export default async function AdminDashboard() {
               ))}
               {stats.recentConfirmedOrders.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="px-6 py-12 text-center text-gray-400 italic">
+                  <td colSpan={6} className="px-6 py-12 text-center text-white/40 italic">
                     <Package className="w-12 h-12 mx-auto mb-3 opacity-20" />
                     {t('noOrders')}
                   </td>

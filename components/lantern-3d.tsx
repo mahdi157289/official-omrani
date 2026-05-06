@@ -236,17 +236,10 @@ interface Lantern3DProps {
 }
 
 export function Lantern3D({ className = "h-[600px] w-full", interactive = true, model = 'all' }: Lantern3DProps) {
-  const [mounted, setMounted] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) return <div className={className} />;
-
   return (
-    <div ref={containerRef} className={className}>
+    <div ref={containerRef} className={className} style={{ background: 'transparent' }}>
       <Canvas
         key={`canvas-${model}`}
         eventSource={containerRef.current || undefined}
@@ -300,17 +293,10 @@ export function Lantern3D({ className = "h-[600px] w-full", interactive = true, 
 }
 
 export function ParticleGlow({ className = "absolute inset-0 w-full h-full pointer-events-none" }: { className?: string }) {
-  const [mounted, setMounted] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) return null;
-
   return (
-    <div ref={containerRef} className={className}>
+    <div ref={containerRef} className={className} style={{ background: 'transparent' }}>
       <Canvas
         eventSource={containerRef.current || undefined}
         eventPrefix="client"

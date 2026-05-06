@@ -9,6 +9,8 @@ interface UIContextType {
   setAdminLocale: (loc: string) => void;
   sidebarCollapsed: boolean;
   toggleSidebar: () => void;
+  mobileSidebarOpen: boolean;
+  setMobileSidebarOpen: (open: boolean) => void;
   introFinished: boolean;
   setIntroFinished: (finished: boolean) => void;
   isMounted: boolean; // Add isMounted to the context
@@ -20,6 +22,7 @@ export function UIProvider({ children }: { children: React.ReactNode }) {
   const [show3DItems, setShow3DItems] = useState(true);
   const [adminLocale, setAdminLocaleState] = useState<string>('ar');
   const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(false);
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState<boolean>(false);
   const [introFinished, setIntroFinished] = useState(false);
   // Initialize isMounted to true on client to avoid initial render issues
   const [isMounted, setIsMounted] = useState(typeof window !== 'undefined');
@@ -109,6 +112,8 @@ export function UIProvider({ children }: { children: React.ReactNode }) {
       setAdminLocale,
       sidebarCollapsed,
       toggleSidebar,
+      mobileSidebarOpen,
+      setMobileSidebarOpen,
       introFinished,
       setIntroFinished: setIntroFinishedHandler,
       isMounted

@@ -93,12 +93,12 @@ export function FAQList({ locale }: { locale: string }) {
   return (
     <div className="max-w-3xl mx-auto space-y-4">
       {faqs.map((faq, index) => (
-        <div key={index} className="bg-white rounded-lg shadow-md overflow-hidden">
+        <div key={index} className="glass-card-effect rounded-lg shadow-md overflow-hidden border border-white/10">
           <button
             onClick={() => toggleFAQ(index)}
-            className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
+            className="w-full px-6 py-4 flex items-center justify-between hover:bg-white/10 transition-colors"
           >
-            <span className="font-semibold text-left flex-1">
+            <span className="font-semibold text-left flex-1 text-white">
               {faq.question[locale] || faq.question.en}
             </span>
             {openIndex === index ? (
@@ -108,8 +108,8 @@ export function FAQList({ locale }: { locale: string }) {
             )}
           </button>
           {openIndex === index && (
-            <div className="px-6 py-4 border-t bg-gray-50">
-              <p className="text-text-secondary leading-relaxed">
+            <div className="px-6 py-4 border-t border-white/10 bg-white/5">
+              <p className="text-white/70 leading-relaxed">
                 {faq.answer[locale] || faq.answer.en}
               </p>
             </div>

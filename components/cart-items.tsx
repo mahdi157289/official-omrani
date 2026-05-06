@@ -130,7 +130,7 @@ export function CartItems({ locale }: { locale: string }) {
       {/* Cart Items */}
       <div className="lg:col-span-2 space-y-4">
         {items.map((item) => (
-          <div key={item.id} className="bg-white rounded-lg shadow-md p-4 flex gap-4">
+          <div key={item.id} className="glass-card-effect rounded-lg shadow-md p-4 flex gap-4 border border-white/10">
             {item.productImage && (
               <div className="relative w-24 h-24 flex-shrink-0">
                 <Image
@@ -143,28 +143,28 @@ export function CartItems({ locale }: { locale: string }) {
             )}
             <div className="flex-1">
               <Link href={item.type === 'package' ? `/${locale}/packages` : `/${locale}/shop/${item.productSlug}`}>
-                <h3 className="font-semibold text-lg hover:text-primary transition-colors">
+                <h3 className="font-semibold text-lg hover:text-primary transition-colors text-white">
                   {item.productName}
                 </h3>
               </Link>
               {item.variantName && (
-                <p className="text-sm text-text-secondary mt-1">{item.variantName}</p>
+                <p className="text-sm text-white/60 mt-1">{item.variantName}</p>
               )}
               <p className="text-primary font-bold mt-2">{formatPrice(item.price)}</p>
               
               <div className="flex items-center gap-4 mt-4">
-                <div className="flex items-center gap-2 border rounded-lg">
+                <div className="flex items-center gap-2 border border-white/20 rounded-lg">
                   <button
                     onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                    className="p-2 hover:bg-gray-100 transition-colors"
+                    className="p-2 hover:bg-white/10 transition-colors text-white"
                     aria-label="Decrease quantity"
                   >
                     <Minus className="w-4 h-4" />
                   </button>
-                  <span className="px-4 py-2 min-w-[3rem] text-center">{item.quantity}</span>
+                  <span className="px-4 py-2 min-w-[3rem] text-center text-white">{item.quantity}</span>
                   <button
                     onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                    className="p-2 hover:bg-gray-100 transition-colors"
+                    className="p-2 hover:bg-white/10 transition-colors text-white"
                     aria-label="Increase quantity"
                   >
                     <Plus className="w-4 h-4" />
@@ -180,7 +180,7 @@ export function CartItems({ locale }: { locale: string }) {
               </div>
             </div>
             <div className="text-right">
-              <p className="font-bold text-lg">{formatPrice(item.total)}</p>
+              <p className="font-bold text-lg text-white">{formatPrice(item.total)}</p>
             </div>
           </div>
         ))}
@@ -188,31 +188,31 @@ export function CartItems({ locale }: { locale: string }) {
 
       {/* Order Summary */}
       <div className="lg:col-span-1">
-        <div className="bg-white rounded-lg shadow-md p-6 sticky top-24">
-          <h2 className="text-xl font-bold mb-4">
+        <div className="glass-card-effect rounded-lg shadow-md p-6 sticky top-24 border border-white/10">
+          <h2 className="text-xl font-bold mb-4 text-white">
             {locale === 'ar' ? 'ملخص الطلب' : locale === 'fr' ? 'Résumé de la commande' : 'Order Summary'}
           </h2>
           
           <div className="space-y-3 mb-6">
             <div className="flex justify-between">
-              <span className="text-text-secondary">
+              <span className="text-white/60">
                 {locale === 'ar' ? 'المجموع الفرعي' : locale === 'fr' ? 'Sous-total' : 'Subtotal'}
               </span>
-              <span className="font-semibold">{formatPrice(subtotal)}</span>
+              <span className="font-semibold text-white">{formatPrice(subtotal)}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-text-secondary">
+              <span className="text-white/60">
                 {locale === 'ar' ? 'رسوم التوصيل' : locale === 'fr' ? 'Frais de livraison' : 'Delivery Fee'}
               </span>
-              <span className="font-semibold">
+              <span className="font-semibold text-white">
                 {deliveryFee === 0 
                   ? (locale === 'ar' ? 'مجاناً' : locale === 'fr' ? 'Gratuit' : 'Free')
                   : formatPrice(deliveryFee)
                 }
               </span>
             </div>
-            <div className="border-t pt-3 flex justify-between text-lg font-bold">
-              <span>
+            <div className="border-t border-white/10 pt-3 flex justify-between text-lg font-bold">
+              <span className="text-white">
                 {locale === 'ar' ? 'الإجمالي' : locale === 'fr' ? 'Total' : 'Total'}
               </span>
               <span className="text-primary">{formatPrice(total)}</span>

@@ -1,6 +1,6 @@
 'use client';
 import { useSession } from 'next-auth/react';
-import { Bell, User, ExternalLink } from 'lucide-react';
+import { Bell, User, ExternalLink, Menu, X } from 'lucide-react';
 import Link from 'next/link';
 import { useUI } from '@/components/providers/ui-provider';
 import { useState, useEffect } from 'react';
@@ -10,6 +10,7 @@ export function AdminHeader() {
   const { data: session } = useSession();
   const locale = useLocale();
   const t = useTranslations('admin');
+  const { mobileSidebarOpen, setMobileSidebarOpen } = useUI();
   const [pendingOrderCount, setPendingOrderCount] = useState(0);
 
   // Poll for new pending orders every 15 seconds
@@ -30,9 +31,18 @@ export function AdminHeader() {
   }, []);
 
   return (
-    <header className="fixed top-0 left-0 right-0 h-16 bg-white border-b border-gray-200 z-50 flex items-center justify-between px-8">
-      <div className="flex items-center gap-4">
-        <h1 className="text-xl font-bold text-primary">{t('panel')}</h1>
+    <header className="fixed top-0 left-0 right-0 h-16 bg-white border-b border-gray-200 z-50 flex items-center justify-between px-4 md:px-8">
+      <div className="flex items-center gap-2 md:gap-4">
+        <button
+          onClick={() => setMobileSidebarOpen(!mobileSidebarOpen)}
+          className="p-2 lg:hidden text-gray-600 hover:bg-gray-100 rounded-lg"
+          aria-label="Toggle Menu"
+        >
+          {mobileSidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+        </button>
+        <h1 className="text-lg md:text-xl font-bold text-primary truncate max-w-[120px] md:max-w-none">
+          {t('panel')}
+        </h1>
         <Link
           href="/"
           className="hidden md:flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-primary transition-colors ml-4"
@@ -58,11 +68,11 @@ export function AdminHeader() {
         </Link>
 
 
-        <div className="flex items-center gap-3 px-4 py-2 bg-white border border-gray-100 rounded-xl shadow-sm ml-2">
-          <div className="p-1.5 bg-gray-100 rounded-lg">
+        <div className="flex items-center gap-3 px-3 md:px-4 py-2 bg-white border border-gray-100 rounded-xl shadow-sm ml-2">
+          <div className="p-1.5 bg-gray-100 rounded-lg shrink-0">
             <User className="w-4 h-4 text-primary" />
           </div>
-          <span className="text-sm font-bold text-gray-900">
+          <span className="text-sm font-bold text-gray-900 truncate max-w-[80px] md:max-w-[150px]">
             {session?.user?.name || session?.user?.email}
           </span>
         </div>

@@ -53,7 +53,7 @@ export function FeaturedProducts({ locale, products = [] }: { locale: string; pr
     const scroll = () => {
       if (!isHovered && !isDragging) {
         frameCount++;
-        if (frameCount % 2 === 0) {
+        if (frameCount % 3 === 0) {
           if (container.scrollLeft + container.clientWidth >= container.scrollWidth - 1) {
             container.scrollLeft = 0;
           } else {
@@ -158,7 +158,7 @@ export function FeaturedProducts({ locale, products = [] }: { locale: string; pr
       {/* Navigation Buttons */}
       <button
         onClick={scrollLeft}
-        className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white p-3 rounded-full shadow-lg text-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300 -ml-4 md:-ml-5 hover:scale-110 active:scale-90"
+        className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 p-3 rounded-full shadow-lg text-white opacity-0 group-hover:opacity-100 transition-all duration-300 -ml-4 md:-ml-5 hover:scale-110 active:scale-90"
         aria-label="Scroll left"
       >
         <ChevronLeft className="w-6 h-6" />
@@ -166,7 +166,7 @@ export function FeaturedProducts({ locale, products = [] }: { locale: string; pr
 
       <button
         onClick={scrollRight}
-        className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white p-3 rounded-full shadow-lg text-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300 -mr-4 md:-mr-5 hover:scale-110 active:scale-95"
+        className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 p-3 rounded-full shadow-lg text-white opacity-0 group-hover:opacity-100 transition-all duration-300 -mr-4 md:-mr-5 hover:scale-110 active:scale-95"
         aria-label="Scroll right"
       >
         <ChevronRight className="w-6 h-6" />
@@ -216,7 +216,7 @@ export function FeaturedProducts({ locale, products = [] }: { locale: string; pr
         <div className="h-px bg-primary/20 w-full max-w-xs hidden md:block"></div>
         <Link
           href={`/${locale}/shop`}
-          className="mx-6 group relative inline-flex items-center gap-2 px-8 py-3 bg-white border-2 border-primary text-primary hover:bg-primary hover:text-white rounded-full font-bold transition-all duration-300 shadow-md hover:shadow-xl gold-border glare-effect"
+          className="mx-6 group relative inline-flex items-center gap-2 px-8 py-3 bg-white/5 backdrop-blur-lg border-2 border-primary text-primary hover:bg-primary hover:text-white rounded-full font-bold transition-all duration-300 shadow-md hover:shadow-xl gold-border glare-effect"
         >
           <span>
             {t('viewAllProducts')}

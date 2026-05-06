@@ -112,4 +112,25 @@
       transform: rotate(45deg) translate(100%, 100%);
     }
   }
+
+  .glass-card-effect {
+    @apply bg-white/5 backdrop-blur-lg border border-white/10 shadow-xl;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .glass-card-effect:hover {
+    @apply bg-white/10 border-white/20 shadow-2xl;
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
 }

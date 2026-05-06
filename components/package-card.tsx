@@ -48,8 +48,8 @@ export function PackageCard({ pkg, locale }: PackageCardProps) {
     const recipeIngredients = locale === 'ar' ? (pkg.recipeIngredientsAr || pkg.recipeIngredientsFr) : (pkg.recipeIngredientsFr || pkg.recipeIngredientsAr);
 
     return (
-        <div className="bg-[#F2C782] rounded-2xl shadow-lg overflow-hidden group hover:shadow-xl transition-all duration-300 gold-border flex flex-col h-full">
-            <div className="relative h-64 overflow-hidden bg-gray-50">
+        <div className="glass-card-effect rounded-2xl shadow-lg overflow-hidden group hover:shadow-xl transition-all duration-300 gold-border flex flex-col h-full">
+            <div className="relative h-64 overflow-hidden bg-white/5">
                 <Link href={`/${locale}/packages/${pkg.slug}`} className="relative block w-full h-full">
                     {pkg.image ? (
                         <Image
@@ -70,27 +70,27 @@ export function PackageCard({ pkg, locale }: PackageCardProps) {
                 </Link>
 
                 {/* Action Buttons */}
-                <div className="absolute top-0 right-0 h-full w-20 flex items-center justify-center translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-out z-40 pointer-events-none group-hover:pointer-events-auto">
-                    <div className="flex flex-col gap-3 mr-4">
+                <div className="absolute top-0 right-0 h-full w-16 md:w-20 flex items-center justify-center translate-x-0 lg:translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-out z-40 pointer-events-auto">
+                    <div className="flex flex-col gap-2 md:gap-3 mr-2 md:mr-4">
                         <Link
                             href={`/${locale}/packages/${pkg.slug}`}
-                            className="w-11 h-11 rounded-full bg-white text-gray-900 shadow-xl hover:bg-primary hover:text-white flex items-center justify-center transition-all hover:scale-110 active:scale-90"
+                            className="w-10 h-10 md:w-11 md:h-11 rounded-full bg-white/10 backdrop-blur-md text-white shadow-xl hover:bg-primary hover:text-white flex items-center justify-center transition-all hover:scale-110 active:scale-90 border border-white/20"
                             aria-label="View Details"
                         >
-                            <Eye className="w-5 h-5" />
+                            <Eye className="w-4 h-4 md:w-5 md:h-5" />
                         </Link>
                         <button
                             type="button"
-                            className="w-11 h-11 rounded-full bg-white text-gray-900 shadow-xl hover:bg-primary hover:text-white flex items-center justify-center transition-all hover:scale-110 active:scale-90"
+                            className="w-10 h-10 md:w-11 md:h-11 rounded-full bg-white/10 backdrop-blur-md text-white shadow-xl hover:bg-primary hover:text-white flex items-center justify-center transition-all hover:scale-110 active:scale-90 border border-white/20"
                         >
-                            <Ear className="w-5 h-5" />
+                            <Ear className="w-4 h-4 md:w-5 md:h-5" />
                         </button>
                         <AddToCartButton
                             itemId={pkg.id}
                             type="package"
                             locale={locale}
                             compact={true}
-                            className="w-11 h-11 rounded-full bg-secondary text-white shadow-xl flex items-center justify-center hover:scale-110 active:scale-90 transition-all"
+                            className="w-10 h-10 md:w-11 md:h-11 rounded-full bg-secondary text-white shadow-xl flex items-center justify-center hover:scale-110 active:scale-90 transition-all"
                         />
                     </div>
                 </div>
@@ -104,7 +104,7 @@ export function PackageCard({ pkg, locale }: PackageCardProps) {
 
             <div className="p-5 flex flex-col flex-grow">
                 <Link href={`/${locale}/packages/${pkg.slug}`} className="block mb-1 group-hover:text-primary transition-colors">
-                    <h3 className="font-bold text-2xl md:text-3xl leading-tight line-clamp-2 min-h-[4rem] text-gray-900 text-center">
+                    <h3 className="font-bold text-2xl md:text-3xl leading-tight line-clamp-2 min-h-[4rem] text-white text-center">
                         {name}
                     </h3>
                 </Link>
@@ -113,17 +113,17 @@ export function PackageCard({ pkg, locale }: PackageCardProps) {
                 <div className="w-16 h-1 bg-[#346977] mx-auto mb-4 rounded-full opacity-60" />
 
                 {description && (
-                    <p className="text-lg mb-3 line-clamp-2 text-center leading-relaxed" style={{ color: '#346977' }}>
+                    <p className="text-lg mb-3 line-clamp-2 text-center leading-relaxed text-white/80">
                         {description}
                     </p>
                 )}
 
                 {recipeIngredients && (
                     <div className="mb-4 text-center">
-                        <span className="text-xs font-bold uppercase tracking-wider text-[#346977] opacity-70 block mb-1">
+                        <span className="text-xs font-bold uppercase tracking-wider text-primary opacity-90 block mb-1">
                             {t('recipeIngredients')}
                         </span>
-                        <p className="text-sm font-semibold text-gray-900 line-clamp-2">
+                        <p className="text-sm font-semibold text-white/90 line-clamp-2">
                             {recipeIngredients.split('\n').filter(l => l.trim()).join(' • ')}
                         </p>
                     </div>

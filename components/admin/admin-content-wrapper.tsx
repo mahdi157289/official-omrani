@@ -11,10 +11,10 @@ export function AdminContentWrapper({ children }: { children: React.ReactNode })
 
   return (
     <div className={cn(
-      'flex-1 transition-all duration-300',
+      'flex-1 transition-all duration-300 w-full lg:w-auto',
       isRTL
-        ? (sidebarCollapsed ? 'mr-20' : 'mr-64')
-        : (sidebarCollapsed ? 'ml-20' : 'ml-64')
+        ? (sidebarCollapsed ? 'lg:mr-20' : 'lg:mr-64')
+        : (sidebarCollapsed ? 'lg:ml-20' : 'lg:ml-64')
     )}>
       {children}
     </div>

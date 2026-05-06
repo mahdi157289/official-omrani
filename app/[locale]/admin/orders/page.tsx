@@ -37,7 +37,7 @@ export default async function AdminOrdersPage() {
   return (
     <div>
       <div className="flex items-center justify-between mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">{t('orders')}</h1>
+        <h1 className="text-3xl font-bold text-white">{t('orders')}</h1>
         {pending.length > 0 && (
           <span className="px-4 py-2 bg-orange-100 text-orange-800 rounded-full text-sm font-bold animate-pulse">
             🔔 {pending.length} {locale === 'ar' ? 'طلب جديد' : locale === 'fr' ? 'nouvelle(s) commande(s)' : 'new order(s)'}
@@ -45,53 +45,110 @@ export default async function AdminOrdersPage() {
         )}
       </div>
 
-      <div className="bg-white rounded-2xl shadow overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+      <div className="glass-card-effect rounded-2xl shadow overflow-hidden border border-white/10">
+        {/* Mobile View: Cards */}
+        <div className="md:hidden divide-y divide-white/5">
+          {sorted.map((order) => (
+            <div key={order.id} className={`p-4 bg-transparent space-y-3 ${order.status === 'PENDING' ? 'bg-orange-500/10 border-l-4 border-l-orange-400' : ''}`}>
+              <div className="flex justify-between items-start gap-2">
+                <div className="flex flex-col">
+                  <span className="font-bold text-sm text-white">#{order.orderNumber}</span>
+                  <span className="text-xs text-white/50">{new Date(order.createdAt).toLocaleDateString()} {new Date(order.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                </div>
+                <span
+                  className={`px-2.5 py-1 text-[10px] font-bold rounded-full whitespace-nowrap ${
+                    order.status === 'DELIVERED'
+                      ? 'bg-green-500/20 text-green-400'
+                      : order.status === 'CANCELLED'
+                      ? 'bg-red-500/20 text-red-400'
+                      : order.status === 'PENDING'
+                      ? 'bg-orange-500/20 text-orange-400'
+                      : 'bg-yellow-500/20 text-yellow-400'
+                  }`}
+                >
+                  {t(order.status.toLowerCase())}
+                </span>
+              </div>
+              
+              <div className="flex flex-col gap-1 text-sm">
+                <div className="font-semibold text-white/90 flex justify-between">
+                  <span className="line-clamp-1">{order.customerName}</span>
+                  <span className="font-bold text-white">{formatPrice(Number(order.totalAmount))}</span>
+                </div>
+                {order.customerPhone && (
+                  <a href={`tel:${order.customerPhone}`} className="text-blue-600 font-semibold flex items-center gap-1 w-fit">
+                    📞 {order.customerPhone}
+                  </a>
+                )}
+                {order.deliveryAddress && (
+                  <span className="text-white/60 line-clamp-1 text-xs" title={order.deliveryAddress}>
+                    📍 {order.deliveryAddress}
+                  </span>
+                )}
+              </div>
+
+              <div className="pt-2 border-t border-white/5 flex items-center justify-between">
+                <span className="text-xs text-white/40 font-medium">
+                  {order.items.length} {t('itemCount')}
+                </span>
+                <Link
+                  href={`/${locale}/admin/orders/${order.id}`}
+                  className="text-xs font-bold text-primary bg-primary/10 px-4 py-2 rounded-lg"
+                >
+                  {t('view')}
+                </Link>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Desktop View: Table */}
+        <div className="hidden md:block overflow-x-auto">
+          <table className="min-w-full divide-y divide-white/5">
+            <thead className="bg-white/5">
               <tr>
-                <th className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-start text-xs font-medium text-white/40 uppercase tracking-wider">
                   {t('orderId')}
                 </th>
-                <th className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-start text-xs font-medium text-white/40 uppercase tracking-wider">
                   {t('customer')}
                 </th>
-                <th className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-start text-xs font-medium text-white/40 uppercase tracking-wider">
                   {locale === 'ar' ? 'هاتف' : locale === 'fr' ? 'Téléphone' : 'Phone'}
                 </th>
-                <th className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-start text-xs font-medium text-white/40 uppercase tracking-wider">
                   {locale === 'ar' ? 'العنوان' : locale === 'fr' ? 'Adresse' : 'Address'}
                 </th>
-                <th className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-start text-xs font-medium text-white/40 uppercase tracking-wider">
                   {t('items')}
                 </th>
-                <th className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-start text-xs font-medium text-white/40 uppercase tracking-wider">
                   {t('total')}
                 </th>
-                <th className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-start text-xs font-medium text-white/40 uppercase tracking-wider">
                   {t('status')}
                 </th>
-                <th className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-start text-xs font-medium text-white/40 uppercase tracking-wider">
                   {t('date')}
                 </th>
-                <th className="px-4 py-3 text-end text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-end text-xs font-medium text-white/40 uppercase tracking-wider">
                   {t('action')}
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="divide-y divide-white/5">
               {sorted.map((order) => (
                 <tr
                   key={order.id}
-                  className={`hover:bg-gray-50 ${order.status === 'PENDING' ? 'bg-orange-50 border-l-4 border-l-orange-400' : ''}`}
+                  className={`hover:bg-white/5 transition-colors ${order.status === 'PENDING' ? 'bg-orange-500/10 border-l-4 border-l-orange-400' : ''}`}
                 >
-                  <td className="px-4 py-4 whitespace-nowrap text-sm font-bold text-gray-900">
+                  <td className="px-4 py-4 whitespace-nowrap text-sm font-bold text-white">
                     {order.orderNumber}
                   </td>
                   <td className="px-4 py-4">
-                    <div className="text-sm font-semibold text-gray-900">{order.customerName}</div>
+                    <div className="text-sm font-semibold text-white/90">{order.customerName}</div>
                     {order.customerNotes && (
-                      <div className="text-xs text-gray-400 italic max-w-[120px] truncate" title={order.customerNotes}>
+                      <div className="text-xs text-white/40 italic max-w-[120px] truncate" title={order.customerNotes}>
                         📝 {order.customerNotes}
                       </div>
                     )}
@@ -116,27 +173,27 @@ export default async function AdminOrdersPage() {
                   <td className="px-4 py-4 text-sm text-gray-500">
                     {order.items.length} {t('itemCount')}
                   </td>
-                  <td className="px-4 py-4 whitespace-nowrap text-sm font-bold text-gray-900">
+                  <td className="px-4 py-4 whitespace-nowrap text-sm font-bold text-white">
                     {formatPrice(Number(order.totalAmount))}
                   </td>
                   <td className="px-4 py-4 whitespace-nowrap">
                     <span
                       className={`px-2 py-1 text-xs font-semibold rounded-full ${
                         order.status === 'DELIVERED'
-                          ? 'bg-green-100 text-green-800'
+                          ? 'bg-green-500/20 text-green-400'
                           : order.status === 'CANCELLED'
-                          ? 'bg-red-100 text-red-800'
+                          ? 'bg-red-500/20 text-red-400'
                           : order.status === 'PENDING'
-                          ? 'bg-orange-100 text-orange-800'
-                          : 'bg-yellow-100 text-yellow-800'
+                          ? 'bg-orange-500/20 text-orange-400'
+                          : 'bg-yellow-500/20 text-yellow-400'
                       }`}
                     >
                       {t(order.status.toLowerCase())}
                     </span>
                   </td>
-                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="px-4 py-4 whitespace-nowrap text-sm text-white/50">
                     <div>{new Date(order.createdAt).toLocaleDateString()}</div>
-                    <div className="text-xs text-gray-400">
+                    <div className="text-xs text-white/30">
                       {new Date(order.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </div>
                   </td>
@@ -156,8 +213,8 @@ export default async function AdminOrdersPage() {
       </div>
 
       {orders.length === 0 && (
-        <div className="text-center py-12 bg-white rounded-2xl shadow">
-          <p className="text-gray-600">{t('noOrders')}</p>
+        <div className="text-center py-12 glass-card-effect rounded-2xl shadow">
+          <p className="text-white/60">{t('noOrders')}</p>
         </div>
       )}
     </div>

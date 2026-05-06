@@ -35,15 +35,29 @@ export function AdminSidebar() {
   const pathname = usePathname();
   const locale = useLocale();
   const t = useTranslations('admin');
-  const { sidebarCollapsed, toggleSidebar } = useUI();
+  const { sidebarCollapsed, toggleSidebar, mobileSidebarOpen, setMobileSidebarOpen } = useUI();
   const isRTL = locale === 'ar';
 
   return (
-    <aside className={cn(
-      'fixed top-16 h-[calc(100vh-4rem)] bg-white flex flex-col transition-all duration-300 z-40',
-      isRTL ? 'right-0 border-l' : 'left-0 border-r',
-      sidebarCollapsed ? 'w-20' : 'w-64'
-    )}>
+    <>
+      {/* Backdrop for mobile */}
+      {mobileSidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          onClick={() => setMobileSidebarOpen(false)}
+        />
+      )}
+
+      <aside className={cn(
+        'fixed top-16 h-[calc(100vh-4rem)] bg-white flex flex-col transition-all duration-300 z-40',
+        isRTL ? 'right-0 border-l' : 'left-0 border-r',
+        sidebarCollapsed ? 'w-20' : 'w-64',
+        // Mobile visibility
+        mobileSidebarOpen 
+          ? 'translate-x-0' 
+          : (isRTL ? 'translate-x-full' : '-translate-x-full'),
+        'lg:translate-x-0' // Always visible on desktop
+      )}>
       <div className="p-3 border-b border-gray-200 flex items-center justify-between">
         <span className={cn('text-sm font-semibold text-gray-700', sidebarCollapsed && 'sr-only')}>
           {t('panel')}
@@ -69,6 +83,7 @@ export function AdminSidebar() {
             <Link
               key={item.href}
               href={`/${locale}${item.href}`}
+              onClick={() => setMobileSidebarOpen(false)}
               className={cn(
                 'flex items-center px-4 py-3 rounded-lg transition-colors',
                 isActive
@@ -101,6 +116,7 @@ export function AdminSidebar() {
         </button>
       </div>
     </aside>
+    </>
   );
 }
 

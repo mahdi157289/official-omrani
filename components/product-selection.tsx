@@ -60,13 +60,13 @@ export function ProductSelection({ product, locale, t }: ProductSelectionProps) 
                                 <button
                                     key={variant.id}
                                     onClick={() => setSelectedVariantId(variant.id)}
-                                    className={`px-4 py-2 border-2 rounded-lg transition-all text-left min-w-[120px] ${isActive
-                                        ? 'border-secondary bg-secondary text-white shadow-lg scale-105'
-                                        : 'border-primary/30 text-white hover:border-primary/60 hover:bg-white/5'
+                                    className={`px-4 py-2 border rounded-lg transition-all text-left min-w-[120px] shadow-sm ${isActive
+                                        ? 'border-[#D4AF37] bg-[#D4AF37]/20 text-white shadow-[#D4AF37]/20 scale-105'
+                                        : 'glass-card-effect border-white/10 text-white hover:border-white/30 hover:bg-white/10'
                                         }`}
                                 >
                                     <div className="text-sm font-bold">{variantName}</div>
-                                    <div className={`text-xs ${isActive ? 'text-white/80' : 'text-primary'}`}>
+                                    <div className={`text-xs ${isActive ? 'text-white' : 'text-white/60'}`}>
                                         {formatPrice(totalPrice)}
                                     </div>
                                 </button>

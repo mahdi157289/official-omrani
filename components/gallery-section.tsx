@@ -55,11 +55,11 @@ export async function GallerySection({ locale }: { locale: string }) {
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-700"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
+                <div className="absolute inset-0 bg-black/40 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
                   <h3 className="text-white text-xl font-bold mb-1">
                     {locale === 'ar' ? item.titleAr : locale === 'fr' ? item.titleFr : item.titleAr}
                   </h3>
-                  <p className="text-white/80 text-sm">
+                  <p className="text-white/90 text-sm">
                     {locale === 'ar' ? item.descriptionAr : locale === 'fr' ? item.descriptionFr : item.descriptionAr}
                   </p>
                 </div>

@@ -21,7 +21,7 @@ export default async function AdminMediaPage() {
   return (
     <div>
       <div className="flex items-center justify-between mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">{t('media')}</h1>
+        <h1 className="text-3xl font-bold text-white">{t('media')}</h1>
         <MediaUpload />
       </div>
 
@@ -29,7 +29,7 @@ export default async function AdminMediaPage() {
         {media.map((item) => (
           <div
             key={item.id}
-            className="bg-white rounded-lg shadow overflow-hidden group hover:shadow-lg transition-shadow"
+            className="glass-card-effect rounded-lg shadow overflow-hidden group hover:shadow-lg transition-shadow border border-white/10"
           >
             <div className="relative aspect-square">
               <Image
@@ -38,23 +38,23 @@ export default async function AdminMediaPage() {
                 fill
                 className="object-cover"
               />
-              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
+              <div className="absolute inset-0 bg-black/40 backdrop-blur-sm group-hover:bg-opacity-50 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
                 <button className="text-white hover:text-red-400 transition-colors" title={t('delete')}>
                   <Trash2 className="w-6 h-6" />
                 </button>
               </div>
             </div>
             <div className="p-2">
-              <p className="text-xs text-gray-600 truncate">{item.fileName}</p>
+              <p className="text-[10px] text-white/50 truncate">{item.fileName}</p>
             </div>
           </div>
         ))}
       </div>
 
       {media.length === 0 && (
-        <div className="text-center py-12 bg-white rounded-lg shadow">
-          <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-          <p className="text-gray-600">{t('noMedia') || "No media files yet."}</p>
+        <div className="text-center py-12 glass-card-effect rounded-lg shadow border border-white/10">
+          <Upload className="w-12 h-12 text-white/20 mx-auto mb-4" />
+          <p className="text-white/60">{t('noMedia') || "No media files yet."}</p>
         </div>
       )}
     </div>

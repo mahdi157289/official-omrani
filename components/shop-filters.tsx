@@ -59,9 +59,9 @@ export function ShopFilters({ categories, locale }: ShopFiltersProps) {
     };
 
     return (
-        <div className="bg-[#F2C782] p-6 rounded-2xl shadow-lg gold-border mb-8 space-y-8 h-fit">
-            <div className="pb-6 border-b border-black/10">
-                <h3 className="text-xl font-bold mb-4 text-gray-900">
+        <div className="glass-card-effect p-6 rounded-2xl shadow-lg gold-border mb-8 space-y-8 h-fit">
+            <div className="pb-6 border-b border-white/10">
+                <h3 className="text-xl font-bold mb-4 text-white">
                     {locale === 'ar' ? 'النوع' : locale === 'fr' ? 'Type' : 'Type'}
                 </h3>
                 <div className="flex gap-2">
@@ -69,7 +69,7 @@ export function ShopFilters({ categories, locale }: ShopFiltersProps) {
                         onClick={() => router.push(`${pathname}?${createQueryString('type', '')}`)}
                         className={`flex-1 px-4 py-2 rounded-full border-2 transition-all duration-300 font-medium text-center ${!currentType
                             ? 'bg-secondary text-white border-secondary shadow-md'
-                            : 'bg-white/50 text-gray-700 border-transparent hover:bg-white hover:border-secondary/50'
+                            : 'bg-white/5 text-white/70 border-white/10 hover:bg-white/10 hover:border-secondary/50'
                             }`}
                     >
                         {locale === 'ar' ? 'الكل' : locale === 'fr' ? 'Tout' : 'All'}
@@ -78,7 +78,7 @@ export function ShopFilters({ categories, locale }: ShopFiltersProps) {
                         onClick={() => router.push(`${pathname}?${createQueryString('type', 'product')}`)}
                         className={`flex-1 px-4 py-2 rounded-full border-2 transition-all duration-300 font-medium text-center ${currentType === 'product'
                             ? 'bg-secondary text-white border-secondary shadow-md'
-                            : 'bg-white/50 text-gray-700 border-transparent hover:bg-white hover:border-secondary/50'
+                            : 'bg-white/5 text-white/70 border-white/10 hover:bg-white/10 hover:border-secondary/50'
                             }`}
                     >
                         {locale === 'ar' ? 'منتجات' : locale === 'fr' ? 'Produits' : 'Products'}
@@ -87,7 +87,7 @@ export function ShopFilters({ categories, locale }: ShopFiltersProps) {
                         onClick={() => router.push(`${pathname}?${createQueryString('type', 'package')}`)}
                         className={`flex-1 px-4 py-2 rounded-full border-2 transition-all duration-300 font-medium text-center ${currentType === 'package'
                             ? 'bg-secondary text-white border-secondary shadow-md'
-                            : 'bg-white/50 text-gray-700 border-transparent hover:bg-white hover:border-secondary/50'
+                            : 'bg-white/5 text-white/70 border-white/10 hover:bg-white/10 hover:border-secondary/50'
                             }`}
                     >
                         {locale === 'ar' ? 'باقات' : locale === 'fr' ? 'Packs' : 'Packs'}
@@ -96,7 +96,7 @@ export function ShopFilters({ categories, locale }: ShopFiltersProps) {
             </div>
 
             <div>
-                <h3 className="text-xl font-bold mb-4 text-gray-900">
+                <h3 className="text-xl font-bold mb-4 text-white">
                     {locale === 'ar' ? 'الأصناف' : locale === 'fr' ? 'Catégories' : 'Categories'}
                 </h3>
                 <div className="flex flex-wrap gap-2">
@@ -104,7 +104,7 @@ export function ShopFilters({ categories, locale }: ShopFiltersProps) {
                         onClick={() => router.push(`${pathname}?${createQueryString('category', '')}`)}
                         className={`px-4 py-2 rounded-full border-2 transition-all duration-300 font-medium ${!currentCategory
                             ? 'bg-secondary text-white border-secondary shadow-md'
-                            : 'bg-white/50 text-gray-700 border-transparent hover:bg-white hover:border-secondary/50'
+                            : 'bg-white/5 text-white/70 border-white/10 hover:bg-white/10 hover:border-secondary/50'
                             }`}
                     >
                         {locale === 'ar' ? 'الكل' : locale === 'fr' ? 'Tout' : 'All'}
@@ -116,7 +116,7 @@ export function ShopFilters({ categories, locale }: ShopFiltersProps) {
                             onClick={() => router.push(`${pathname}?${createQueryString('category', cat.slug)}`)}
                             className={`px-4 py-2 rounded-full border-2 transition-all duration-300 font-medium ${currentCategory === cat.slug
                                 ? 'bg-secondary text-white border-secondary shadow-md'
-                                : 'bg-white/50 text-gray-700 border-transparent hover:bg-white hover:border-secondary/50'
+                                : 'bg-white/5 text-white/70 border-white/10 hover:bg-white/10 hover:border-secondary/50'
                                 }`}
                         >
                             {getCategoryName(cat)}
@@ -125,8 +125,8 @@ export function ShopFilters({ categories, locale }: ShopFiltersProps) {
                 </div>
             </div>
 
-            <div className="pt-6 border-t border-black/10">
-                <h3 className="text-xl font-bold mb-4 text-gray-900">
+            <div className="pt-6 border-t border-white/10">
+                <h3 className="text-xl font-bold mb-4 text-white">
                     {locale === 'ar' ? 'نطاق السعر' : locale === 'fr' ? 'Prix (TND)' : 'Price Range (TND)'}
                 </h3>
                 <div className="flex flex-col gap-4">
@@ -136,15 +136,15 @@ export function ShopFilters({ categories, locale }: ShopFiltersProps) {
                             placeholder={locale === 'ar' ? 'الأدنى' : 'Min'}
                             value={minPrice}
                             onChange={(e) => setMinPrice(e.target.value)}
-                            className="w-full px-3 py-2 bg-white border-2 border-transparent rounded-lg focus:outline-none focus:border-secondary transition-all text-black font-bold"
+                            className="w-full px-3 py-2 bg-white/5 border-2 border-white/10 rounded-lg focus:outline-none focus:border-secondary transition-all text-white font-bold"
                         />
-                        <span className="text-gray-900 font-bold">-</span>
+                        <span className="text-white/60 font-bold">-</span>
                         <input
                             type="number"
                             placeholder={locale === 'ar' ? 'الأقصى' : 'Max'}
                             value={maxPrice}
                             onChange={(e) => setMaxPrice(e.target.value)}
-                            className="w-full px-3 py-2 bg-white border-2 border-transparent rounded-lg focus:outline-none focus:border-secondary transition-all text-black font-bold"
+                            className="w-full px-3 py-2 bg-white/5 border-2 border-white/10 rounded-lg focus:outline-none focus:border-secondary transition-all text-white font-bold"
                         />
                     </div>
                     <button
