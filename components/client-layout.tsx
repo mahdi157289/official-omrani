@@ -23,15 +23,12 @@ export function ClientLayout({
     // All hooks must be called unconditionally at the top level - React rules
     const { introFinished, isMounted: isMountedUI } = useUI();
     const pathname = usePathname();
-    // Initialize mounted to true on client to avoid initial render issues
-    const [mounted, setMounted] = useState(typeof window !== 'undefined');
+    // Always start false — flipped to true after first client render
+    const [mounted, setMounted] = useState(false);
     
     useEffect(() => {
-        // Ensure mounted is set on client
-        if (typeof window !== 'undefined' && !mounted) {
-            setMounted(true);
-        }
-    }, [mounted]);
+        setMounted(true);
+    }, []);
 
     useEffect(() => {
         // Initialization side effects can be added here
@@ -66,8 +63,8 @@ export function ClientLayout({
 
                 <div
                     style={{
-                        opacity: introFinished ? 1 : 0,
-                        pointerEvents: introFinished ? 'auto' : 'none',
+                        opacity: 1,
+                        pointerEvents: 'auto',
                         transition: 'opacity 0.5s ease',
                     }}
                 >
@@ -76,7 +73,7 @@ export function ClientLayout({
                     {!isActuallyAdmin && <Footer />}
                 </div>
 
-                {introFinished && !isActuallyAdmin && (
+                {!isActuallyAdmin && (
                     <>
                         <CartSidebar locale={locale} />
                         <LanguageSwitcher />

@@ -23,7 +23,7 @@ export function LocationSection({ locale }: LocationSectionProps) {
     const t = (obj: Record<string, string>) => obj[locale] || obj['en'];
 
     return (
-        <div className="container mx-auto px-4">
+        <div className="w-[88%] max-w-6xl mx-auto">
             <SectionTitle title={locale === 'ar' ? 'موقعنا' : locale === 'fr' ? 'Notre Emplacement' : 'Our Location'} />
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-12">

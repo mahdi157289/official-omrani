@@ -24,18 +24,18 @@ export function SectionTitle({ title, align = 'center', className = '' }: Sectio
         
         {/* Decorative Separator */}
         <div className={`mt-6 flex items-center gap-4 opacity-100 ${align === 'center' ? 'justify-center' : align === 'left' ? 'justify-start' : 'justify-end'}`}>
-          <div className="h-px bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent w-12 md:w-32"></div>
+          <div className="h-px bg-gradient-to-r from-transparent via-gold to-transparent w-12 md:w-32"></div>
           
           <div className="flex items-center gap-2">
-            <div className="w-1.5 h-1.5 rounded-full bg-[#D4AF37]/60"></div>
+            <div className="w-1.5 h-1.5 rounded-full bg-gold/60"></div>
             <div className="relative flex items-center justify-center w-6 h-6">
-              <div className="absolute inset-0 border border-[#D4AF37] rotate-45 transform transition-transform duration-700 hover:rotate-180"></div>
-              <div className="w-2.5 h-2.5 bg-[#D4AF37] rotate-45"></div>
+              <div className="absolute inset-0 border border-gold/70 rotate-45 transform transition-transform duration-700 hover:rotate-180"></div>
+              <div className="w-2.5 h-2.5 bg-gold rotate-45"></div>
             </div>
-            <div className="w-1.5 h-1.5 rounded-full bg-[#D4AF37]/60"></div>
+            <div className="w-1.5 h-1.5 rounded-full bg-gold/60"></div>
           </div>
           
-          <div className="h-px bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent w-12 md:w-32"></div>
+          <div className="h-px bg-gradient-to-r from-transparent via-gold to-transparent w-12 md:w-32"></div>
         </div>
       </FadeIn>
     </div>

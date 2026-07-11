@@ -54,7 +54,7 @@ export function FloatingPhone() {
 
         <a
           href="tel:+21694700009"
-          className="w-12 h-12 rounded-full bg-[#437983] hover:bg-[#F2C782] text-white shadow-lg flex items-center justify-center transition-all hover:scale-110 relative group border-2 border-[#D4AF37]/30"
+          className="w-12 h-12 rounded-full bg-[#437983] hover:bg-gold-dark text-white shadow-lg flex items-center justify-center transition-all hover:scale-110 relative group gold-border-ring"
           aria-label="Call Us"
         >
           <Phone className={`w-5 h-5 transition-transform duration-300 ${isHovered ? 'rotate-12' : ''}`} />

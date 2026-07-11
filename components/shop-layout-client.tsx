@@ -19,9 +19,9 @@ export function ShopLayoutClient({ children, sidebar, locale }: ShopLayoutClient
             <div className="fixed bottom-[320px] right-6 z-50">
                 <button
                     onClick={() => setShowFilters(!showFilters)}
-                    className={`w-14 h-14 rounded-full shadow-2xl flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 group border-2 ${showFilters
-                        ? 'bg-secondary border-secondary text-white shadow-[0_0_15px_rgba(231,193,95,0.4)]'
-                        : 'bg-[#F2C782] border-secondary text-gray-900 shadow-lg'
+                    className={`w-14 h-14 rounded-full shadow-2xl flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 group gold-border-ring ${showFilters
+                        ? 'bg-secondary text-white shadow-[0_0_12px_rgba(255,214,0,0.35)]'
+                        : 'bg-gold-light/90 text-gray-900 shadow-lg'
                         }`}
                     aria-label="Toggle Filters"
                 >

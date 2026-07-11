@@ -19,19 +19,16 @@ interface UIContextType {
 const UIContext = createContext<UIContextType | undefined>(undefined);
 
 export function UIProvider({ children }: { children: React.ReactNode }) {
-  const [show3DItems, setShow3DItems] = useState(true);
+  const [show3DItems, setShow3DItems] = useState(false);
   const [adminLocale, setAdminLocaleState] = useState<string>('ar');
   const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState<boolean>(false);
-  const [introFinished, setIntroFinished] = useState(false);
-  // Initialize isMounted to true on client to avoid initial render issues
-  const [isMounted, setIsMounted] = useState(typeof window !== 'undefined');
+  const [introFinished, setIntroFinished] = useState(true);
+  // Always start false so SSR and client first render match (prevents hook count mismatch)
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    // Ensure mounted is set on client
-    if (typeof window !== 'undefined' && !isMounted) {
-      setIsMounted(true);
-    }
+    setIsMounted(true);
 
     // Hydrate everything from localStorage only on client
     // Use try-catch to handle cases where localStorage might not be available

@@ -61,7 +61,7 @@ export function ProductSelection({ product, locale, t }: ProductSelectionProps) 
                                     key={variant.id}
                                     onClick={() => setSelectedVariantId(variant.id)}
                                     className={`px-4 py-2 border rounded-lg transition-all text-left min-w-[120px] shadow-sm ${isActive
-                                        ? 'border-[#D4AF37] bg-[#D4AF37]/20 text-white shadow-[#D4AF37]/20 scale-105'
+                                        ? 'border-gold bg-gold/20 text-white shadow-gold/20 scale-105'
                                         : 'glass-card-effect border-white/10 text-white hover:border-white/30 hover:bg-white/10'
                                         }`}
                                 >

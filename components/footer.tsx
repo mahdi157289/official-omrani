@@ -17,8 +17,8 @@ export function Footer() {
   }, []);
 
   return (
-    <footer className="bg-[#00353F] text-white mt-16 border-t border-white/10">
-      <div className="container mx-auto px-4 py-12">
+    <footer className="bg-[#00353F] text-white mt-16 border-t border-gold-muted">
+      <div className="w-[88%] max-w-6xl mx-auto py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand */}
           <div>
@@ -39,7 +39,7 @@ export function Footer() {
                 href="https://www.facebook.com/makroudhomrani"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-white/70 hover:text-[#D4AF37] transition-colors"
+                className="text-white/70 hover:text-gold transition-colors"
                 aria-label="Facebook"
               >
                 <Facebook className="w-5 h-5" />
@@ -48,7 +48,7 @@ export function Footer() {
                 href="https://www.instagram.com/makroudhomrani"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-white/70 hover:text-[#D4AF37] transition-colors"
+                className="text-white/70 hover:text-gold transition-colors"
                 aria-label="Instagram"
               >
                 <Instagram className="w-5 h-5" />
@@ -63,27 +63,27 @@ export function Footer() {
             </h4>
             <ul className="space-y-2">
               <li>
-                <Link href={`/${locale}`} className="text-white/70 hover:text-[#D4AF37] transition-colors">
+                <Link href={`/${locale}`} className="text-white/70 hover:text-gold transition-colors">
                   {commonT('home')}
                 </Link>
               </li>
               <li>
-                <Link href={`/${locale}/shop`} className="text-white/70 hover:text-[#D4AF37] transition-colors">
+                <Link href={`/${locale}/shop`} className="text-white/70 hover:text-gold transition-colors">
                   {commonT('shop')}
                 </Link>
               </li>
               <li>
-                <Link href={`/${locale}/about`} className="text-white/70 hover:text-[#D4AF37] transition-colors">
+                <Link href={`/${locale}/about`} className="text-white/70 hover:text-gold transition-colors">
                   {commonT('about')}
                 </Link>
               </li>
               <li>
-                <Link href={`/${locale}/contact`} className="text-white/70 hover:text-[#D4AF37] transition-colors">
+                <Link href={`/${locale}/contact`} className="text-white/70 hover:text-gold transition-colors">
                   {commonT('contact')}
                 </Link>
               </li>
               <li>
-                <Link href="/admin" className="text-white/40 hover:text-[#D4AF37] transition-colors text-xs mt-4 block border-t border-white/10 pt-2">
+                <Link href="/admin" className="text-white/40 hover:text-gold transition-colors text-xs mt-4 block border-t border-white/10 pt-2">
                   {commonT('dashboard')}
                 </Link>
               </li>
@@ -97,17 +97,17 @@ export function Footer() {
             </h4>
             <ul className="space-y-2">
               <li>
-                <Link href={`/${locale}/orders`} className="text-white/70 hover:text-[#D4AF37] transition-colors">
+                <Link href={`/${locale}/orders`} className="text-white/70 hover:text-gold transition-colors">
                   {commonT('orders')}
                 </Link>
               </li>
               <li>
-                <Link href={`/${locale}/faq`} className="text-white/70 hover:text-[#D4AF37] transition-colors">
+                <Link href={`/${locale}/faq`} className="text-white/70 hover:text-gold transition-colors">
                   {commonT('faq')}
                 </Link>
               </li>
               <li>
-                <Link href={`/${locale}/shipping`} className="text-white/70 hover:text-[#D4AF37] transition-colors">
+                <Link href={`/${locale}/shipping`} className="text-white/70 hover:text-gold transition-colors">
                   {t('shipping')}
                 </Link>
               </li>
@@ -121,20 +121,20 @@ export function Footer() {
             </h4>
             <ul className="space-y-3">
               <li className="flex items-start gap-2">
-                <MapPin className="w-5 h-5 text-[#D4AF37] flex-shrink-0 mt-0.5" />
+                <MapPin className="w-5 h-5 text-gold flex-shrink-0 mt-0.5" />
                 <span className="text-white/70 text-sm">
                   {commonT('locationValue')}
                 </span>
               </li>
               <li className="flex items-center gap-2">
-                <Phone className="w-5 h-5 text-[#D4AF37] flex-shrink-0" />
-                <a href="tel:+21694700009" className="text-white/70 hover:text-[#D4AF37] transition-colors text-sm">
+                <Phone className="w-5 h-5 text-gold flex-shrink-0" />
+                <a href="tel:+21694700009" className="text-white/70 hover:text-gold transition-colors text-sm">
                   <span dir="ltr" className="inline-block">94 700 009</span>
                 </a>
               </li>
               <li className="flex items-center gap-2">
-                <Mail className="w-5 h-5 text-[#D4AF37] flex-shrink-0" />
-                <a href="mailto:info@makroudhomrani.tn" className="text-white/70 hover:text-[#D4AF37] transition-colors text-sm">
+                <Mail className="w-5 h-5 text-gold flex-shrink-0" />
+                <a href="mailto:info@makroudhomrani.tn" className="text-white/70 hover:text-gold transition-colors text-sm">
                   info@makroudhomrani.tn
                 </a>
               </li>
@@ -142,7 +142,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-white/10 mt-8 pt-8 text-center text-white/50 text-sm">
+        <div className="border-t border-gold-muted mt-8 pt-8 text-center text-white/50 text-sm">
           <p>
             © {year || '2024'} Makroudh Omrani. {t('rightsReserved')}
           </p>

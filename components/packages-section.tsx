@@ -4,15 +4,16 @@ import { GlassCard } from '@/components/ui/glass-card';
 import { getTranslations } from 'next-intl/server';
 import { getServerSessionId } from '@/lib/get-session-id';
 import { getCache, setCache } from '@/lib/redis-cache';
+import { serializePackage } from '@/lib/serialize-client';
 import { PackagesCarousel } from './packages-carousel';
 
 async function getPackages(sessionId?: string) {
   try {
     // Try to get from cache first
     if (sessionId) {
-      const cached = await getCache(sessionId, 'packages:all');
+      const cached = await getCache<any[]>(sessionId, 'packages:all');
       if (cached) {
-        return cached;
+        return cached.map((pkg) => serializePackage(pkg as Record<string, unknown>));
       }
     }
 
@@ -30,13 +31,15 @@ async function getPackages(sessionId?: string) {
       },
     });
 
+    const serialized = packages.map((pkg) => serializePackage(pkg as Record<string, unknown>));
+
     // Cache the results
     if (sessionId) {
-      await setCache(sessionId, 'packages:all', packages);
+      await setCache(sessionId, 'packages:all', serialized);
     }
 
-    console.log('Fetched packages count:', packages.length);
-    return packages;
+    console.log('Fetched packages count:', serialized.length);
+    return serialized;
   } catch (error) {
     console.error('Error fetching packages:', error);
     return [];
@@ -77,7 +80,7 @@ export async function PackagesSection({
   }
 
   return (
-    <div className="w-[95%] max-w-7xl mx-auto">
+    <div className="w-[88%] max-w-6xl mx-auto">
       <GlassCard>
         <SectionTitle
           title={locale === 'ar' ? 'باقات وعروض' : locale === 'fr' ? 'Packs & Offres' : 'Packages & Offers'}

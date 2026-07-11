@@ -3,16 +3,86 @@ import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
-// Map of media files to products
-const mediaMapping = [
-  { file: 'media.jpg', productIndex: 0 },
-  { file: 'media2.jpg', productIndex: 0 },
-  { file: 'media3.jpg', productIndex: 1 },
-  { file: 'media4.jpg', productIndex: 1 },
-  { file: 'media5.jpg', productIndex: 2 },
-  { file: 'media6.jpg', productIndex: 2 },
-  { file: 'media7.jpg', productIndex: 3 },
-  { file: 'media8.jpg', productIndex: 3 },
+type FamilyKey = 'classic' | 'date' | 'almond' | 'honey';
+
+const productFamilies: Record<FamilyKey, {
+  descriptionAr: string;
+  descriptionFr: string;
+  descriptionEn: string;
+  ingredientsAr: string;
+  ingredientsFr: string;
+  basePrice: number;
+  comparePrice: number;
+  stockQuantity: number;
+  isNew: boolean;
+}> = {
+  classic: {
+    descriptionAr: 'مقروض تقليدي أصيل مصنوع من أجود المكونات الطبيعية. طعم لا يُقاوم يحمل نكهة التقاليد التونسية الأصيلة.',
+    descriptionFr: 'Makroudh traditionnel authentique fait avec les meilleurs ingrédients naturels. Un goût irrésistible qui porte la saveur des traditions tunisiennes authentiques.',
+    descriptionEn: 'Authentic traditional makroudh made with the finest natural ingredients. An irresistible taste that carries the flavor of authentic Tunisian traditions.',
+    ingredientsAr: 'دقيق أبيض، تمر، زبدة سمن، ماء زهر',
+    ingredientsFr: 'Farine blanche, dattes, beurre clarifié, eau de fleur d\'oranger',
+    basePrice: 15.5,
+    comparePrice: 18.0,
+    stockQuantity: 50,
+    isNew: false,
+  },
+  date: {
+    descriptionAr: 'مقروض غني بالتمر الطازج، يمنحك طعماً حلواً طبيعياً وملمساً ناعماً.',
+    descriptionFr: 'Makroudh riche en dattes fraîches, vous offrant un goût naturellement sucré et une texture douce.',
+    descriptionEn: 'Makroudh rich in fresh dates, giving you a naturally sweet taste and soft texture.',
+    ingredientsAr: 'دقيق أبيض، تمر طازج، زبدة سمن، ماء زهر',
+    ingredientsFr: 'Farine blanche, dattes fraîches, beurre clarifié, eau de fleur d\'oranger',
+    basePrice: 18.0,
+    comparePrice: 22.0,
+    stockQuantity: 40,
+    isNew: false,
+  },
+  almond: {
+    descriptionAr: 'مقروض فاخر محشو باللوز المقرمش، يجمع بين الحلاوة والطعم المميز للوز.',
+    descriptionFr: 'Makroudh de luxe fourré d\'amandes croquantes, alliant douceur et saveur distinctive des amandes.',
+    descriptionEn: 'Luxury makroudh stuffed with crunchy almonds, combining sweetness and the distinctive taste of almonds.',
+    ingredientsAr: 'دقيق أبيض، تمر، لوز، زبدة سمن، ماء زهر',
+    ingredientsFr: 'Farine blanche, dattes, amandes, beurre clarifié, eau de fleur d\'oranger',
+    basePrice: 20.0,
+    comparePrice: 25.0,
+    stockQuantity: 35,
+    isNew: false,
+  },
+  honey: {
+    descriptionAr: 'مقروض مميز محلى بالعسل الطبيعي، يمنحك طعماً فريداً ومغذياً.',
+    descriptionFr: 'Makroudh spécial sucré au miel naturel, vous offrant un goût unique et nutritif.',
+    descriptionEn: 'Special makroudh sweetened with natural honey, giving you a unique and nutritious taste.',
+    ingredientsAr: 'دقيق أبيض، تمر، عسل طبيعي، زبدة سمن، ماء زهر',
+    ingredientsFr: 'Farine blanche, dattes, miel naturel, beurre clarifié, eau de fleur d\'oranger',
+    basePrice: 22.0,
+    comparePrice: 27.0,
+    stockQuantity: 30,
+    isNew: true,
+  },
+};
+
+const productCatalog: Array<{
+  family: FamilyKey;
+  file: string;
+  sku: string;
+  slug: string;
+  nameAr: string;
+  nameFr: string;
+  nameEn: string;
+}> = [
+  { family: 'classic', file: 'product images/00/1.JPG', sku: 'MK-CLASSIC-001', slug: 'makroudh-classic-1', nameAr: 'مقروض كلاسيكي', nameFr: 'Makroudh Classique', nameEn: 'Classic Makroudh' },
+  { family: 'classic', file: 'product images/00/2.JPG', sku: 'MK-CLASSIC-002', slug: 'makroudh-classic-2', nameAr: 'مقروض كلاسيكي ٢', nameFr: 'Makroudh Classique II', nameEn: 'Classic Makroudh II' },
+  { family: 'classic', file: 'product images/00/9.JPG', sku: 'MK-CLASSIC-003', slug: 'makroudh-classic-3', nameAr: 'مقروض كلاسيكي ٣', nameFr: 'Makroudh Classique III', nameEn: 'Classic Makroudh III' },
+  { family: 'date', file: 'product images/00/3.JPG', sku: 'MK-DATE-001', slug: 'makroudh-date-1', nameAr: 'مقروض بالتمر', nameFr: 'Makroudh aux Dattes', nameEn: 'Date Makroudh' },
+  { family: 'date', file: 'product images/00/4.JPG', sku: 'MK-DATE-002', slug: 'makroudh-date-2', nameAr: 'مقروض بالتمر ٢', nameFr: 'Makroudh aux Dattes II', nameEn: 'Date Makroudh II' },
+  { family: 'date', file: 'product images/00/10.JPG', sku: 'MK-DATE-003', slug: 'makroudh-date-3', nameAr: 'مقروض بالتمر ٣', nameFr: 'Makroudh aux Dattes III', nameEn: 'Date Makroudh III' },
+  { family: 'almond', file: 'product images/00/5.JPG', sku: 'MK-ALMOND-001', slug: 'makroudh-almond-1', nameAr: 'مقروض باللوز', nameFr: 'Makroudh aux Amandes', nameEn: 'Almond Makroudh' },
+  { family: 'almond', file: 'product images/00/6.JPG', sku: 'MK-ALMOND-002', slug: 'makroudh-almond-2', nameAr: 'مقروض باللوز ٢', nameFr: 'Makroudh aux Amandes II', nameEn: 'Almond Makroudh II' },
+  { family: 'almond', file: 'product images/00/11.JPG', sku: 'MK-ALMOND-003', slug: 'makroudh-almond-3', nameAr: 'مقروض باللوز ٣', nameFr: 'Makroudh aux Amandes III', nameEn: 'Almond Makroudh III' },
+  { family: 'honey', file: 'product images/00/7.JPG', sku: 'MK-HONEY-001', slug: 'makroudh-honey-1', nameAr: 'مقروض بالعسل', nameFr: 'Makroudh au Miel', nameEn: 'Honey Makroudh' },
+  { family: 'honey', file: 'product images/00/8.JPG', sku: 'MK-HONEY-002', slug: 'makroudh-honey-2', nameAr: 'مقروض بالعسل ٢', nameFr: 'Makroudh au Miel II', nameEn: 'Honey Makroudh II' },
+  { family: 'honey', file: 'product images/00/12.JPG', sku: 'MK-HONEY-003', slug: 'makroudh-honey-3', nameAr: 'مقروض بالعسل ٣', nameFr: 'Makroudh au Miel III', nameEn: 'Honey Makroudh III' },
 ];
 
 async function main() {
@@ -55,162 +125,91 @@ async function main() {
     },
   });
 
-  // Create Products
+  // Create Products (12 products, one image each)
   console.log('🍪 Creating products...');
 
-  const products = [
-    {
-      sku: 'MK-CLASSIC-001',
-      slug: 'makroudh-classic',
-      nameAr: 'مقروض كلاسيكي',
-      nameFr: 'Makroudh Classique',
-      nameEn: 'Classic Makroudh',
-      descriptionAr: 'مقروض تقليدي أصيل مصنوع من أجود المكونات الطبيعية. طعم لا يُقاوم يحمل نكهة التقاليد التونسية الأصيلة.',
-      descriptionFr: 'Makroudh traditionnel authentique fait avec les meilleurs ingrédients naturels. Un goût irrésistible qui porte la saveur des traditions tunisiennes authentiques.',
-      descriptionEn: 'Authentic traditional makroudh made with the finest natural ingredients. An irresistible taste that carries the flavor of authentic Tunisian traditions.',
-      basePrice: 15.5,
-      comparePrice: 18.0,
-      stockQuantity: 50,
-      status: 'ACTIVE',
-      isFeatured: true,
-      isNew: false,
-      categoryId: categoryMakroudh.id,
-      ingredientsAr: 'دقيق أبيض، تمر، زبدة سمن، ماء زهر',
-      ingredientsFr: 'Farine blanche, dattes, beurre clarifié, eau de fleur d\'oranger',
-      shelfLifeDays: 30,
-      storageInstructionsAr: 'يحفظ في مكان بارد وجاف',
-      storageInstructionsFr: 'Conserver dans un endroit frais et sec',
-    },
-    {
-      sku: 'MK-DATE-001',
-      slug: 'makroudh-date',
-      nameAr: 'مقروض بالتمر',
-      nameFr: 'Makroudh aux Dattes',
-      nameEn: 'Date Makroudh',
-      descriptionAr: 'مقروض غني بالتمر الطازج، يمنحك طعماً حلواً طبيعياً وملمساً ناعماً.',
-      descriptionFr: 'Makroudh riche en dattes fraîches, vous offrant un goût naturellement sucré et une texture douce.',
-      descriptionEn: 'Makroudh rich in fresh dates, giving you a naturally sweet taste and soft texture.',
-      basePrice: 18.0,
-      comparePrice: 22.0,
-      stockQuantity: 40,
-      status: 'ACTIVE',
-      isFeatured: true,
-      isNew: false,
-      categoryId: categoryMakroudh.id,
-      ingredientsAr: 'دقيق أبيض، تمر طازج، زبدة سمن، ماء زهر',
-      ingredientsFr: 'Farine blanche, dattes fraîches, beurre clarifié, eau de fleur d\'oranger',
-      shelfLifeDays: 30,
-      storageInstructionsAr: 'يحفظ في مكان بارد وجاف',
-      storageInstructionsFr: 'Conserver dans un endroit frais et sec',
-    },
-    {
-      sku: 'MK-ALMOND-001',
-      slug: 'makroudh-almond',
-      nameAr: 'مقروض باللوز',
-      nameFr: 'Makroudh aux Amandes',
-      nameEn: 'Almond Makroudh',
-      descriptionAr: 'مقروض فاخر محشو باللوز المقرمش، يجمع بين الحلاوة والطعم المميز للوز.',
-      descriptionFr: 'Makroudh de luxe fourré d\'amandes croquantes, alliant douceur et saveur distinctive des amandes.',
-      descriptionEn: 'Luxury makroudh stuffed with crunchy almonds, combining sweetness and the distinctive taste of almonds.',
-      basePrice: 20.0,
-      comparePrice: 25.0,
-      stockQuantity: 35,
-      status: 'ACTIVE',
-      isFeatured: true,
-      isNew: false,
-      categoryId: categoryMakroudh.id,
-      ingredientsAr: 'دقيق أبيض، تمر، لوز، زبدة سمن، ماء زهر',
-      ingredientsFr: 'Farine blanche, dattes, amandes, beurre clarifié, eau de fleur d\'oranger',
-      shelfLifeDays: 30,
-      storageInstructionsAr: 'يحفظ في مكان بارد وجاف',
-      storageInstructionsFr: 'Conserver dans un endroit frais et sec',
-    },
-    {
-      sku: 'MK-HONEY-001',
-      slug: 'makroudh-honey',
-      nameAr: 'مقروض بالعسل',
-      nameFr: 'Makroudh au Miel',
-      nameEn: 'Honey Makroudh',
-      descriptionAr: 'مقروض مميز محلى بالعسل الطبيعي، يمنحك طعماً فريداً ومغذياً.',
-      descriptionFr: 'Makroudh spécial sucré au miel naturel, vous offrant un goût unique et nutritif.',
-      descriptionEn: 'Special makroudh sweetened with natural honey, giving you a unique and nutritious taste.',
-      basePrice: 22.0,
-      comparePrice: 27.0,
-      stockQuantity: 30,
-      status: 'ACTIVE',
-      isFeatured: true,
-      isNew: true,
-      categoryId: categoryMakroudh.id,
-      ingredientsAr: 'دقيق أبيض، تمر، عسل طبيعي، زبدة سمن، ماء زهر',
-      ingredientsFr: 'Farine blanche, dattes, miel naturel, beurre clarifié, eau de fleur d\'oranger',
-      shelfLifeDays: 30,
-      storageInstructionsAr: 'يحفظ في مكان بارد وجاف',
-      storageInstructionsFr: 'Conserver dans un endroit frais et sec',
-    },
-  ];
+  const retiredSlugs = ['makroudh-classic', 'makroudh-date', 'makroudh-almond', 'makroudh-honey'];
+  const deleted = await prisma.product.deleteMany({ where: { slug: { in: retiredSlugs } } });
+  if (deleted.count > 0) {
+    console.log(`🗑️ Removed ${deleted.count} legacy product(s)`);
+  }
 
-  for (let productIndex = 0; productIndex < products.length; productIndex++) {
-    const productData = products[productIndex];
+  for (const item of productCatalog) {
+    const family = productFamilies[item.family];
     const product = await prisma.product.upsert({
-      where: { slug: productData.slug },
-      update: {},
-      create: productData,
+      where: { slug: item.slug },
+      update: {
+        status: 'ACTIVE',
+        isFeatured: true,
+        basePrice: family.basePrice,
+        comparePrice: family.comparePrice,
+        stockQuantity: family.stockQuantity,
+      },
+      create: {
+        sku: item.sku,
+        slug: item.slug,
+        nameAr: item.nameAr,
+        nameFr: item.nameFr,
+        nameEn: item.nameEn,
+        descriptionAr: family.descriptionAr,
+        descriptionFr: family.descriptionFr,
+        descriptionEn: family.descriptionEn,
+        basePrice: family.basePrice,
+        comparePrice: family.comparePrice,
+        stockQuantity: family.stockQuantity,
+        status: 'ACTIVE',
+        isFeatured: true,
+        isNew: family.isNew,
+        categoryId: categoryMakroudh.id,
+        ingredientsAr: family.ingredientsAr,
+        ingredientsFr: family.ingredientsFr,
+        shelfLifeDays: 30,
+        storageInstructionsAr: 'يحفظ في مكان بارد وجاف',
+        storageInstructionsFr: 'Conserver dans un endroit frais et sec',
+      },
     });
 
-    // Create product images using local media files
-    const productMediaFiles = mediaMapping.filter(m => m.productIndex === productIndex);
-    const defaultMediaFiles = productIndex === 0 
-      ? ['media.jpg', 'media2.jpg']
-      : productIndex === 1
-      ? ['media3.jpg', 'media4.jpg']
-      : productIndex === 2
-      ? ['media5.jpg', 'media6.jpg']
-      : ['media7.jpg', 'media8.jpg'];
-    
-    const imageFiles = productMediaFiles.length > 0 
-      ? productMediaFiles.map(m => m.file)
-      : defaultMediaFiles;
+    const mediaUrl = `/media/${item.file}`;
+    await prisma.media.upsert({
+      where: { cloudinaryId: item.sku },
+      update: {
+        url: mediaUrl,
+        secureUrl: mediaUrl,
+        fileName: item.file,
+        productId: product.id,
+        altTextAr: item.nameAr,
+        altTextFr: item.nameFr,
+        altTextEn: item.nameEn,
+      },
+      create: {
+        fileName: item.file,
+        cloudinaryId: item.sku,
+        url: mediaUrl,
+        secureUrl: mediaUrl,
+        altTextAr: item.nameAr,
+        altTextFr: item.nameFr,
+        altTextEn: item.nameEn,
+        type: 'IMAGE',
+        productId: product.id,
+      },
+    });
 
-    for (let index = 0; index < imageFiles.length && index < 2; index++) {
-      const mediaFile = imageFiles[index];
-      const mediaUrl = `/media/${mediaFile}`;
-      
-      await prisma.media.upsert({
-        where: {
-          cloudinaryId: `${product.slug}-${index}`,
-        },
-        update: {},
-        create: {
-          fileName: mediaFile,
-          cloudinaryId: `${product.slug}-${index}`,
-          url: mediaUrl,
-          secureUrl: mediaUrl,
-          altTextAr: index === 0 ? productData.nameAr : `${productData.nameAr} - صورة إضافية`,
-          altTextFr: index === 0 ? productData.nameFr : `${productData.nameFr} - Image supplémentaire`,
-          altTextEn: index === 0 ? productData.nameEn : `${productData.nameEn} - Additional image`,
-          type: 'IMAGE',
-          productId: product.id,
-        },
-      });
-    }
-
-    // Create product variants (weight options)
     const variants = [
       {
         nameAr: '500 جرام',
         nameFr: '500g',
-        sku: `${product.sku}-500g`,
+        sku: `${item.sku}-500g`,
         weight: '500',
         priceModifier: 0,
-        stockQuantity: productData.stockQuantity,
+        stockQuantity: family.stockQuantity,
       },
       {
         nameAr: '1 كيلو',
         nameFr: '1kg',
-        sku: `${product.sku}-1kg`,
+        sku: `${item.sku}-1kg`,
         weight: '1000',
         priceModifier: 0,
-        stockQuantity: Math.floor(productData.stockQuantity * 0.7),
+        stockQuantity: Math.floor(family.stockQuantity * 0.7),
       },
     ];
 
@@ -225,7 +224,7 @@ async function main() {
       });
     }
 
-    console.log(`✅ Created product: ${productData.nameFr}`);
+    console.log(`✅ Created product: ${item.nameFr}`);
   }
 
   // Create Site Configuration

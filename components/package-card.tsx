@@ -134,10 +134,10 @@ export function PackageCard({ pkg, locale }: PackageCardProps) {
                         {discountPrice ? (
                             <>
                                 <span className="text-gray-400 line-through text-lg">{formatPrice(price)}</span>
-                                <span className="text-3xl font-bold text-primary">{formatPrice(discountPrice)}</span>
+                                <span className="text-3xl font-bold text-gold">{formatPrice(discountPrice)}</span>
                             </>
                         ) : (
-                            <span className="text-3xl font-bold text-primary">{formatPrice(price)}</span>
+                            <span className="text-3xl font-bold text-gold">{formatPrice(price)}</span>
                         )}
                     </div>
 

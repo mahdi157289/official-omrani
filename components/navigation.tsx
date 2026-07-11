@@ -20,9 +20,15 @@ const ParticleGlow = dynamic(() => import('./lantern-3d').then(mod => mod.Partic
   ssr: false,
   loading: () => null
 });
-// Removed Logo3D import - using 2D circular logo instead
+
+const Logo3D = dynamic(() => import('./logo-3d').then(mod => mod.Logo3D), {
+  ssr: false,
+  loading: () => null
+});
+
 import { DecoSeparator } from './ui/deco-separator';
 import { useUI } from './providers/ui-provider';
+import { FloatingCart } from './floating-cart';
 
 interface NavLinkProps {
   id: string;
@@ -41,11 +47,11 @@ const NavLink = ({ id, label, activeSection, locale, pathname, scrollToSection }
     <a
       href={isHomePage ? `#${id}` : `/${locale}#${id}`}
       onClick={(e) => scrollToSection(e, id)}
-      className={`text-white hover:text-[#D4AF37] transition-all duration-300 font-medium text-lg relative group cursor-pointer ${isActive ? 'text-[#D4AF37]' : ''
+      className={`text-white hover:text-gold transition-all duration-300 font-medium text-lg relative group cursor-pointer ${isActive ? 'text-gold' : ''
         }`}
     >
       {label}
-      <span className={`absolute -bottom-1 left-0 w-full h-0.5 bg-[#D4AF37] transform origin-left transition-transform duration-300 ${isActive ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
+      <span className={`absolute -bottom-1 left-0 w-full h-0.5 bg-gold transform origin-left transition-transform duration-300 ${isActive ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
         }`}></span>
     </a>
   );
@@ -142,68 +148,74 @@ export function Navigation() {
   return (
     <>
       {/* Sticky Social Icons - Desktop */}
-      <div className="fixed top-8 left-6 z-[60] hidden lg:block">
-        <motion.a
+      <div className="fixed top-6 left-6 z-[60] hidden lg:block">
+        <motion.div
           initial={{ x: -100, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ delay: 0.5, type: 'spring' }}
-          href="https://www.facebook.com/makroudhomrani"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="p-3 rounded-full bg-[#437983] hover:bg-[#F2C782] border-2 border-[#D4AF37]/30 text-white hover:text-[#437983] shadow-xl transition-all duration-300 flex items-center justify-center group hover:scale-110"
-          aria-label="Facebook"
+          className="relative group"
         >
-          <Facebook className="w-5 h-5 group-hover:rotate-12 transition-transform" />
-        </motion.a>
+          <div className="w-12 h-24 pointer-events-auto flex items-center justify-center">
+            <Link 
+              href="https://www.facebook.com/makroudhomrani" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="block w-full h-full flex items-center justify-center"
+            >
+              <div className="w-10 h-10 flex items-center justify-center opacity-90 rounded-full gold-border-ring bg-[#437983]/80">
+                <Facebook className="w-6 h-6 text-white" />
+              </div>
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-2 rounded-full bg-[#437983]/80 text-white shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <Facebook className="w-4 h-4" />
+              </div>
+            </Link>
+          </div>
+        </motion.div>
       </div>
 
-      <div className="fixed top-8 right-6 z-[60] hidden lg:block">
-        <motion.a
+      <div className="fixed top-6 right-6 z-[60] hidden lg:block">
+        <motion.div
           initial={{ x: 100, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ delay: 0.5, type: 'spring' }}
-          href="https://www.instagram.com/makroudhomrani"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="p-3 rounded-full bg-[#437983] hover:bg-[#F2C782] border-2 border-[#D4AF37]/30 text-white hover:text-[#437983] shadow-xl transition-all duration-300 flex items-center justify-center group hover:scale-110"
-          aria-label="Instagram"
+          className="relative group"
         >
-          <Instagram className="w-5 h-5 group-hover:rotate-12 transition-transform" />
-        </motion.a>
+          <div className="w-12 h-24 pointer-events-auto flex items-center justify-center">
+            <Link 
+              href="https://www.instagram.com/makroudhomrani" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="block w-full h-full flex items-center justify-center"
+            >
+              <div className="w-10 h-10 flex items-center justify-center opacity-90 rounded-full gold-border-ring bg-[#437983]/80">
+                <Instagram className="w-6 h-6 text-white" />
+              </div>
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-2 rounded-full bg-[#437983]/80 text-white shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <Instagram className="w-4 h-4" />
+              </div>
+            </Link>
+          </div>
+        </motion.div>
       </div>
 
+
       <nav
-        className="fixed top-4 left-0 right-0 z-50 transition-all duration-500 ease-in-out bg-[#437983] shadow-2xl w-[88%] max-w-6xl mx-auto rounded-3xl border border-white/10"
+        className="fixed top-4 left-0 right-0 z-50 transition-all duration-500 ease-in-out bg-[#437983] shadow-2xl w-[88%] max-w-6xl mx-auto rounded-3xl gold-border"
       >
         {/* Hanging 3D Objects */}
-        <div
-          className={`absolute top-0 left-0 w-full h-[300px] pointer-events-none overflow-hidden z-0 transition-opacity duration-1000 ease-in-out ${show3DItems && introFinished ? 'opacity-100' : 'opacity-0'
-            }`}
-        >
-          {show3DItems && (
-            <>
-              {/* Background Glow Particles */}
-              <ParticleGlow />
+            <div
+                className={`absolute top-0 left-0 w-full h-[300px] pointer-events-none overflow-hidden z-0 transition-opacity duration-1000 ease-in-out ${show3DItems ? 'opacity-100' : 'opacity-0'
+                    }`}
+            >
+                {show3DItems && (
+                    <>
+                        {/* Background Glow Particles */}
+                        <ParticleGlow />
 
-              {/* Left - New Deco */}
-              <div className="absolute left-4 md:left-12 -top-[22px] w-28 md:w-36 h-36 flex items-center justify-center">
-                <Lantern3D model="new" interactive={false} className="w-full h-full" />
-              </div>
 
-              {/* Center - Lantern */}
-              <div className="absolute left-1/2 -translate-x-1/2 top-14 w-28 md:w-44 h-[240px] md:h-[360px] z-0">
-                <Lantern3D model="lantern" interactive={false} className="w-full h-full" />
-              </div>
-
-              {/* Right - Ramadan Deco */}
-              <div className="absolute right-4 md:right-12 -top-12 w-20 md:w-28 h-[200px] md:h-[300px]">
-                <div className="w-full h-full">
-                  <Lantern3D model="ramadan" interactive={false} className="w-full h-full" />
-                </div>
-              </div>
-            </>
-          )}
-        </div>
+                    </>
+                )}
+            </div>
 
         <div className="container mx-auto px-6 relative z-10">
           <div className="flex items-center justify-between h-20 md:h-28 relative">
@@ -222,15 +234,21 @@ export function Navigation() {
             {/* Mobile Center Logo */}
             <div className="md:hidden absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
               <Link href={`/${locale}`} className="flex flex-col items-center justify-center transform hover:scale-105 transition-transform duration-300">
-                <div className="relative w-[70px] h-[70px] rounded-full border-2 border-[#D4AF37] shadow-lg overflow-hidden p-0 bg-[#00353F]">
-                  <Image
-                    src="/media/logo.png"
-                    alt="Makroudh Omrani"
-                    fill
-                    className="object-cover rounded-full p-0"
-                    priority
-                    sizes="80px"
-                  />
+                <div className="relative w-[70px] h-[70px] z-50 overflow-visible p-0">
+                  {show3DItems ? (
+                    <Logo3D isRotating={false} className="w-full h-full" />
+                  ) : (
+                    <div className="relative w-full h-full rounded-full gold-border-ring shadow-lg overflow-hidden bg-[#00353F]">
+                      <Image
+                        src="/media/logo.png"
+                        alt="Makroudh Omrani"
+                        fill
+                        className="object-cover rounded-full p-0"
+                        priority
+                        sizes="70px"
+                      />
+                    </div>
+                  )}
                 </div>
               </Link>
             </div>
@@ -242,20 +260,20 @@ export function Navigation() {
               <div className="flex-1 flex items-center justify-end gap-12 pr-8">
                 <Link
                   href={`/${locale}/shop`}
-                  className={`text-white hover:text-[#D4AF37] transition-all duration-300 font-medium text-lg relative group cursor-pointer ${pathname === `/${locale}/shop` ? 'text-[#D4AF37]' : ''
+                  className={`text-white hover:text-gold transition-all duration-300 font-medium text-lg relative group cursor-pointer ${pathname === `/${locale}/shop` ? 'text-gold' : ''
                     }`}
                 >
                   {t('shop')}
-                  <span className={`absolute -bottom-1 left-0 w-full h-0.5 bg-[#D4AF37] transform origin-left transition-transform duration-300 ${pathname === `/${locale}/shop` ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
+                  <span className={`absolute -bottom-1 left-0 w-full h-0.5 bg-gold transform origin-left transition-transform duration-300 ${pathname === `/${locale}/shop` ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
                     }`}></span>
                 </Link>
                 <Link
                   href={`/${locale}/shop?type=product`}
-                  className={`text-white hover:text-[#D4AF37] transition-all duration-300 font-medium text-lg relative group cursor-pointer ${pathname.includes('type=product') ? 'text-[#D4AF37]' : ''
+                  className={`text-white hover:text-gold transition-all duration-300 font-medium text-lg relative group cursor-pointer ${pathname.includes('type=product') ? 'text-gold' : ''
                     }`}
                 >
                   {t('products')}
-                  <span className={`absolute -bottom-1 left-0 w-full h-0.5 bg-[#D4AF37] transform origin-left transition-transform duration-300 ${pathname.includes('type=product') ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
+                  <span className={`absolute -bottom-1 left-0 w-full h-0.5 bg-gold transform origin-left transition-transform duration-300 ${pathname.includes('type=product') ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
                     }`}></span>
                 </Link>
               </div>
@@ -269,18 +287,24 @@ export function Navigation() {
                     damping: 20,
                     duration: 1.5
                   }}
-                  className="relative w-[120px] h-[120px] z-50 rounded-full border-[3px] border-[#D4AF37] shadow-xl overflow-hidden p-0 group-hover:border-[#F2C782] transition-all duration-300 bg-[#00353F]"
+                  className="relative w-[100px] h-[100px] z-[70] overflow-visible p-0 transition-all duration-300"
                 >
-                  <Image
-                    src="/media/logo.png"
-                    alt="Makroudh Omrani"
-                    fill
-                    className="object-cover rounded-full p-0"
-                    priority
-                    sizes="120px"
-                  />
+                  {show3DItems ? (
+                    <Logo3D isRotating={false} className="w-full h-full" />
+                  ) : (
+                    <div className="relative w-full h-full rounded-full gold-border-ring shadow-xl overflow-hidden bg-[#00353F] group-hover:border-gold-light transition-all duration-300">
+                      <Image
+                        src="/media/logo.png"
+                        alt="Makroudh Omrani"
+                        fill
+                        className="object-cover rounded-full p-0"
+                        priority
+                        sizes="100px"
+                      />
+                    </div>
+                  )}
                 </motion.div>
-                <div className="-mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <div className="-mt-6 opacity-0 group-hover:opacity-100 transition-all duration-500 scale-150 z-[71]">
                   <DecoSeparator />
                 </div>
               </Link>
@@ -289,11 +313,11 @@ export function Navigation() {
               <div className="flex-1 flex items-center justify-start gap-12 pl-8">
                 <Link
                   href={`/${locale}/shop?type=package`}
-                  className={`text-white hover:text-[#D4AF37] transition-all duration-300 font-medium text-lg relative group cursor-pointer ${pathname.includes('type=package') ? 'text-[#D4AF37]' : ''
+                  className={`text-white hover:text-gold transition-all duration-300 font-medium text-lg relative group cursor-pointer ${pathname.includes('type=package') ? 'text-gold' : ''
                     }`}
                 >
                   {t('packages')}
-                  <span className={`absolute -bottom-1 left-0 w-full h-0.5 bg-[#D4AF37] transform origin-left transition-transform duration-300 ${pathname.includes('type=package') ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
+                  <span className={`absolute -bottom-1 left-0 w-full h-0.5 bg-gold transform origin-left transition-transform duration-300 ${pathname.includes('type=package') ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
                     }`}></span>
                 </Link>
                 <NavLink
@@ -309,7 +333,10 @@ export function Navigation() {
 
             {/* Right Icons (Socials, Search, Cart, User) */}
             <div className="flex items-center gap-3 lg:gap-4 md:absolute md:right-0 z-20">
-
+              {/* Floating Cart integration in Navbar */}
+              <div className="hidden md:block">
+                <FloatingCart inNavbar={true} />
+              </div>
 
               {/* User Menu - Desktop Only */}
               <div className="hidden md:flex items-center gap-2">
@@ -366,28 +393,28 @@ export function Navigation() {
             <div className="md:hidden py-4 border-t border-white/10 glass-card-effect rounded-b-3xl px-6 -mx-6 mt-0">
               <Link
                 href={`/${locale}/shop`}
-                className="block py-3 text-white hover:text-[#D4AF37] border-b border-white/5"
+                className="block py-3 text-white hover:text-gold border-b border-white/5"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 {t('shop')}
               </Link>
               <Link
                 href={`/${locale}/shop?type=product`}
-                className="block py-3 text-white hover:text-[#D4AF37] border-b border-white/5"
+                className="block py-3 text-white hover:text-gold border-b border-white/5"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 {t('products')}
               </Link>
               <Link
                 href={`/${locale}/shop?type=package`}
-                className="block py-3 text-white hover:text-[#D4AF37] border-b border-white/5"
+                className="block py-3 text-white hover:text-gold border-b border-white/5"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 {t('packages')}
               </Link>
               <Link
                 href={`/${locale}#location`}
-                className="block py-3 text-white hover:text-[#D4AF37] border-b border-white/5"
+                className="block py-3 text-white hover:text-gold border-b border-white/5"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 {t('location')}
@@ -399,14 +426,14 @@ export function Navigation() {
                     <div className="py-2 font-semibold text-primary">{session.user?.name}</div>
                     <Link
                       href={`/${locale}/profile`}
-                      className="block py-3 text-white hover:text-[#D4AF37] border-b border-white/5"
+                      className="block py-3 text-white hover:text-gold border-b border-white/5"
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       {t('profile')}
                     </Link>
                     <Link
                       href={`/${locale}/orders`}
-                      className="block py-3 text-white hover:text-[#D4AF37] border-b border-white/5"
+                      className="block py-3 text-white hover:text-gold border-b border-white/5"
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       {t('orders')}
@@ -421,7 +448,7 @@ export function Navigation() {
                 ) : (
                   <Link
                     href={`/${locale}/login`}
-                    className="block py-3 text-[#D4AF37] font-bold text-lg"
+                    className="block py-3 text-gold font-bold text-lg"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     {t('loginButton')}

@@ -17,6 +17,12 @@ const config: Config = {
           DEFAULT: '#437983',
           light: '#6BA4AF',
         },
+        gold: {
+          DEFAULT: '#ffd600',
+          light: '#ffe033',
+          dark: '#ccab00',
+          muted: 'rgba(255, 214, 0, 0.45)',
+        },
         background: {
           DEFAULT: '#00353F',
           card: '#FFFFFF',

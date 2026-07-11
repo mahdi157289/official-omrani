@@ -113,9 +113,7 @@ function CoinBody({ spinRef, meshRef, isRotating }: {
 }) {
   // Rotate around Y to show the 3D coin spin (faces are aligned to ±Z)
   useFrame((state, delta) => {
-    if (spinRef.current && isRotating) {
-      spinRef.current.rotation.y += delta * 1.5;
-    }
+    // Never rotate!
   });
 
   return (
@@ -123,7 +121,7 @@ function CoinBody({ spinRef, meshRef, isRotating }: {
       {/* Coin body - Renders INSTANTLY because it doesn't wait for textures */}
       <mesh ref={meshRef} rotation={[-Math.PI / 2, 0, 0]} geometry={COIN_GEOMETRY}>
         <meshStandardMaterial
-          color="#D4AF37"
+          color="#C5A572"
           metalness={0.9}
           roughness={0.15}
           envMapIntensity={1}
@@ -196,11 +194,22 @@ export function Logo3D({ className = 'w-full h-full', isRotating = false }: Logo
     console.log(`[Zero-Wait Logs] 3D Coin Engine Initialized & Rendered in: ${renderTime.toFixed(2)}ms`);
   };
 
+  const fallbackUI = (
+    <div className={`${className} flex items-center justify-center`} style={{ backgroundColor: '#00353F' }}>
+      <img 
+        src="/media/logo.png" 
+        alt="Omranis Logo" 
+        className="w-1/2 h-auto opacity-80 object-contain pointer-events-none"
+        style={{ filter: 'drop-shadow(0 0 10px rgba(212, 175, 55, 0.3))' }}
+      />
+    </div>
+  );
+
   return (
     <div ref={containerRef} className={className}>
-      <Logo3DErrorBoundary fallback={<div className={`${className} bg-[#00353F]`} />}>
+      <Logo3DErrorBoundary fallback={fallbackUI}>
         <Canvas
-          shadows
+          shadows={false}
           dpr={[1, 2]}
           eventSource={containerRef.current || undefined}
           eventPrefix="client"
@@ -212,10 +221,10 @@ export function Logo3D({ className = 'w-full h-full', isRotating = false }: Logo
             powerPreference: 'high-performance',
           }}
         >
-          <PerspectiveCamera makeDefault position={[0, 0, 6]} fov={40} />
+          <PerspectiveCamera makeDefault position={[0, 0, 6.5]} fov={38} />
           <ambientLight intensity={0.8} color="#ffffff" />
           <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={1.2} color="#FFF9E3" />
-          <pointLight position={[-10, -10, -10]} intensity={0.6} color="#D4AF37" />
+          <pointLight position={[-10, -10, -10]} intensity={0.6} color="#C5A572" />
           <directionalLight position={[0, 5, 5]} intensity={0.5} color="#FFF9E3" />
 
           <Suspense fallback={null}>

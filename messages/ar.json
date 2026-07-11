@@ -28,7 +28,8 @@
     "hoursFriday": "الجمعة: مغلق",
     "noResults": "لا توجد نتائج مطابقة",
     "dashboard": "لوحة الإدارة",
-    "logout": "تسجيل الخروج"
+    "logout": "تسجيل الخروج",
+    "loginButton": "دخول"
   },
   "home": {
     "title": "مقروض العمراني",

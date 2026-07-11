@@ -62,7 +62,7 @@ export function SplashScreen() {
                             animate={{ scale: 1, opacity: 1 }}
                             className="w-64 h-64 md:w-[320px] md:h-[320px] relative z-50 mb-8"
                         >
-                            <Logo3D isRotating={true} />
+                            <Logo3D isRotating={false} />
                         </motion.div>
 
                         {/* Loading text or brand name with glare effect */}

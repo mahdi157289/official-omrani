@@ -40,7 +40,7 @@ export function ProductSkeleton() {
     }
 
     return (
-        <div className="bg-[#F2C782]/20 backdrop-blur-sm rounded-2xl shadow-lg flex flex-col h-full overflow-hidden gold-border transition-all duration-300">
+        <div className="bg-gold/10 backdrop-blur-sm rounded-2xl shadow-lg flex flex-col h-full overflow-hidden gold-border transition-all duration-300">
             {/* Image Skeleton */}
             <div className="w-full h-64 bg-white/10 animate-pulse relative overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full animate-[shimmer_1.5s_infinite]" />

@@ -38,6 +38,11 @@ next-env.d.ts
 # prisma
 /prisma/migrations
 
+# IDE/debug
+.cursor/
+.dbg/
+.trae/
+
 
 
 

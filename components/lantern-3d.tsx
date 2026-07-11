@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, Suspense } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Stage, Float, OrbitControls, ContactShadows, Sparkles, useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
@@ -17,6 +17,26 @@ const GLOW_MATERIAL = new THREE.MeshBasicMaterial({
   transparent: true,
   opacity: 0.8,
 });
+
+class ThreeErrorBoundary extends React.Component<
+  { children: React.ReactNode; fallback?: React.ReactNode },
+  { hasError: boolean }
+> {
+  state = { hasError: false };
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: unknown) {
+    console.error('ThreeJS/Canvas failed to render:', error);
+  }
+
+  render() {
+    if (this.state.hasError) return this.props.fallback ?? null;
+    return this.props.children;
+  }
+}
 
 // Helper for square-aligned shapes (pyramids/square prisms)
 const SquarePrism = ({ width, height, depth, material, ...props }: any) => (
@@ -50,7 +70,7 @@ function LanternChapeauGLB({ material, ...props }: any) {
 }
 
 function RamadanDecoGLB({ material, ...props }: any) {
-  const { scene } = useGLTF('/ramadon deco.glb');
+  const { scene } = useGLTF('/ramadon-deco.glb');
 
   // Clone and override material immediately
   const clonedScene = React.useMemo(() => {
@@ -67,7 +87,7 @@ function RamadanDecoGLB({ material, ...props }: any) {
 }
 
 function NewDecoGLB({ material, ...props }: any) {
-  const { scene } = useGLTF('/media/images/media/source/Untitled 3.gltf');
+  const { scene } = useGLTF('/media/images/media/source/untitled_3.gltf');
 
   // Clone and override material immediately
   const clonedScene = React.useMemo(() => {
@@ -119,62 +139,52 @@ function ProceduralLantern({ model = 'all', ...props }: { model: LanternModelTyp
   const lanternRef = useRef<THREE.Group>(null);
   const decoRef = useRef<THREE.Group>(null);
   const newDecoRef = useRef<THREE.Group>(null);
-  const { scene } = useGLTF('/media/moroccan_lantern.glb');
 
   const metalMaterial = React.useMemo(() => {
     return new THREE.MeshStandardMaterial({
-      color: "#C5A059",
+      color: "#FFD700",
       metalness: 0.9,
-      roughness: 0.35,
-      emissive: "#000000",
-      envMapIntensity: 1.2
+      roughness: 0.2,
+      envMapIntensity: 1
     });
   }, []);
 
-  React.useEffect(() => {
-    scene.traverse((child: any) => {
-      if (child.isMesh) {
-        child.material = metalMaterial;
-      }
-    });
-  }, [scene, metalMaterial]);
-
-  useFrame(() => {
-    if (lanternRef.current) {
-      lanternRef.current.rotation.y += 0.005;
-    }
-  });
+  // useFrame(() => {
+  //   if (lanternRef.current) {
+  //     lanternRef.current.rotation.y += 0.005;
+  //   }
+  // });
 
   return (
     <group {...props}>
-      {(model === 'all' || model === 'lantern') && (
+{/* {(model === 'all' || model === 'lantern') && (
         <HangingChain
           material={metalMaterial}
           x={0}
-          yStart={4.0}
-          yEnd={2.1}
+          yStart={2.5}
+          yEnd={0}
           decoration={true}
         >
           <group ref={lanternRef}>
-            <LanternChapeauGLB position={[0, 0, 0]} scale={1.0} />
+            <LanternChapeauGLB position={[0, 0, 0]} scale={0.7} material={metalMaterial} />
           </group>
         </HangingChain>
-      )}
+      )} */}
 
-      {(model === 'all' || model === 'ramadan') && (
+      {/* {(model === 'all' || model === 'ramadan') && (
         <HangingChain
           material={metalMaterial}
           x={model === 'all' ? 1.4 : 0}
-          yStart={4.0}
-          yEnd={-0.5}
+          yStart={2.5}
+          yEnd={0}
         >
           <group ref={decoRef}>
             <mesh position={[0, -0.1, 0]} rotation={[0, Math.PI / 2, 0]} material={metalMaterial}>
               <torusGeometry args={[0.06, 0.015, 8, 16]} />
             </mesh>
             <RamadanDecoGLB
-              position={[0, -1.5, 0]}
-              scale={0.08}
+              position={[0, -0.8, 0]}
+              scale={0.3}
               material={metalMaterial}
               rotation={[0, 0, 0]}
             />
@@ -186,16 +196,16 @@ function ProceduralLantern({ model = 'all', ...props }: { model: LanternModelTyp
         <HangingChain
           material={metalMaterial}
           x={model === 'all' ? -1.4 : 0}
-          yStart={3.0}
-          yEnd={model === 'new' ? 0.9 : 0.5}
+          yStart={2.5}
+          yEnd={0}
         >
           <group ref={newDecoRef}>
             <mesh position={[0, -0.05, 0]} rotation={[0, Math.PI / 2, 0]} material={metalMaterial}>
               <torusGeometry args={[0.06, 0.015, 8, 16]} />
             </mesh>
             <NewDecoGLB
-              position={[0, -0.6, 0]}
-              scale={model === 'new' ? 2.0 : 2.8}
+              position={[0, -0.4, 0]}
+              scale={model === 'new' ? 0.8 : 1.0}
               material={metalMaterial}
               rotation={[0, 0, 0]}
             />
@@ -212,7 +222,7 @@ function ProceduralLantern({ model = 'all', ...props }: { model: LanternModelTyp
             )}
           </group>
         </HangingChain>
-      )}
+      )} */}
       <ambientLight intensity={0.5} color="#ffd700" />
       <Sparkles
         count={60}
@@ -235,59 +245,64 @@ interface Lantern3DProps {
   model?: LanternModelType;
 }
 
-export function Lantern3D({ className = "h-[600px] w-full", interactive = true, model = 'all' }: Lantern3DProps) {
+export function Lantern3D({ className = "h-[300px] w-full", interactive = true, model = 'all' }: Lantern3DProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
+  // Use static image fallbacks for mobile/low-end devices or when WebGL fails
+  const fallbackImage = model === 'lantern' 
+    ? '/media/static-lantern.jpg' 
+    : model === 'ramadan' 
+      ? '/lantern.png' 
+      : '/media/logo.png';
+
+  const fallbackUI = (
+    <div className={`flex items-center justify-center ${className}`}>
+      <img 
+        src={fallbackImage} 
+        alt="Decorative Item" 
+        className="w-1/2 h-auto opacity-80 object-contain pointer-events-none"
+        style={{ filter: 'drop-shadow(0 0 10px rgba(212, 175, 55, 0.3))' }}
+      />
+    </div>
+  );
+
   return (
-    <div ref={containerRef} className={className} style={{ background: 'transparent' }}>
-      <Canvas
-        key={`canvas-${model}`}
-        eventSource={containerRef.current || undefined}
-        eventPrefix="client"
-        shadows
-        dpr={[1, 2]}
-        camera={{ position: [0, 0, 10], fov: 45 }}
-        gl={{
-          alpha: true,
-          antialias: true,
-          preserveDrawingBuffer: true,
-          powerPreference: "high-performance"
-        }}
-      >
-        <React.Suspense fallback={null}>
-          <Stage environment="city" intensity={0.5} adjustCamera={false} shadows={false}>
+    <div ref={containerRef} className={className}>
+      <ThreeErrorBoundary fallback={fallbackUI}>
+        <Canvas
+          shadows={false}
+          dpr={[1, 1.5]}
+          camera={{ position: [0, 0, 6.5], fov: 40 }}
+          gl={{
+            antialias: true,
+            alpha: true,
+            powerPreference: 'high-performance',
+          }}
+        >
+          <ambientLight intensity={1.5} />
+          <pointLight position={[10, 10, 10]} intensity={2} color="#C5A572" />
+          <pointLight position={[-10, -10, 10]} intensity={1} color="#C5A572" />
+          <Suspense fallback={null}>
             <Float
               speed={1.5}
-              rotationIntensity={model === 'lantern' || model === 'all' ? 0.2 : 0}
-              floatIntensity={0.2}
-              floatingRange={[-0.05, 0.05]}
+              rotationIntensity={0.2}
+              floatIntensity={0.5}
             >
               <ProceduralLantern model={model} />
             </Float>
-          </Stage>
-        </React.Suspense>
+          </Suspense>
 
-        <ContactShadows
-          opacity={0.4}
-          scale={10}
-          blur={2.5}
-          far={4}
-          resolution={256}
-          color="#000000"
-        />
-
-        {interactive && (
-          <OrbitControls
-            enableZoom={interactive}
-            enableRotate={interactive}
-            enablePan={interactive}
-            autoRotate={false}
-            makeDefault
-            minPolarAngle={Math.PI / 4}
-            maxPolarAngle={Math.PI / 1.5}
-          />
-        )}
-      </Canvas>
+          {interactive && (
+            <OrbitControls
+              enableZoom={false}
+              enableRotate={interactive}
+              enablePan={false}
+              autoRotate={false}
+              makeDefault
+            />
+          )}
+        </Canvas>
+      </ThreeErrorBoundary>
     </div>
   );
 }
@@ -297,25 +312,27 @@ export function ParticleGlow({ className = "absolute inset-0 w-full h-full point
 
   return (
     <div ref={containerRef} className={className} style={{ background: 'transparent' }}>
-      <Canvas
-        eventSource={containerRef.current || undefined}
-        eventPrefix="client"
-        camera={{ position: [0, 0, 5], fov: 75 }}
-        gl={{ alpha: true, preserveDrawingBuffer: true }}
-      >
-        <ambientLight intensity={0.5} />
-        <React.Suspense fallback={null}>
-          <Sparkles
-            count={60}
-            scale={[25, 3, 8]}
-            size={5}
-            speed={0.3}
-            opacity={0.6}
-            color="#FFD700"
-            position={[0, 2.5, 0]}
-          />
-        </React.Suspense>
-      </Canvas>
+      <ThreeErrorBoundary fallback={null}>
+        <Canvas
+          eventSource={containerRef.current || undefined}
+          eventPrefix="client"
+          camera={{ position: [0, 0, 5], fov: 75 }}
+          gl={{ alpha: true, preserveDrawingBuffer: true }}
+        >
+          <ambientLight intensity={0.5} />
+          <React.Suspense fallback={null}>
+            <Sparkles
+              count={40}
+              scale={[25, 3, 8]}
+              size={3}
+              speed={0.3}
+              opacity={0.4}
+              color="#FFD700"
+              position={[0, 2.5, 0]}
+            />
+          </React.Suspense>
+        </Canvas>
+      </ThreeErrorBoundary>
     </div>
   );
 }

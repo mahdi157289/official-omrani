@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCache, setCache, preloadAndCache } from '@/lib/redis-cache';
+import { serializePackage, serializeProduct } from '@/lib/serialize-client';
 
 /**
  * Preload API Endpoint
@@ -26,7 +27,12 @@ export async function GET(request: NextRequest) {
       case 'products': {
         const cached = await getCache(sessionId, CACHE_KEYS.featuredProducts);
         if (cached) {
-          return NextResponse.json({ cached: true, data: cached });
+          return NextResponse.json({
+            cached: true,
+            data: (cached as Record<string, unknown>[]).map((p) =>
+              serializeProduct({ ...p, storeType: 'product' })
+            ),
+          });
         }
 
         // Fetch products
@@ -44,22 +50,12 @@ export async function GET(request: NextRequest) {
             },
           },
           orderBy: { createdAt: 'desc' },
-          take: 8,
+          take: 12,
         });
 
-        const formatted = products.map((p) => ({
-          ...p,
-          basePrice: Number(p.basePrice),
-          comparePrice: p.comparePrice ? Number(p.comparePrice) : null,
-          costPrice: p.costPrice ? Number(p.costPrice) : null,
-          createdAt: p.createdAt.toISOString(),
-          updatedAt: p.updatedAt.toISOString(),
-          publishedAt: p.publishedAt ? p.publishedAt.toISOString() : null,
-          variants: p.variants.map((v) => ({
-            ...v,
-            priceModifier: Number(v.priceModifier),
-          })),
-        }));
+        const formatted = products.map((p) =>
+          serializeProduct({ ...p, storeType: 'product' } as Record<string, unknown>)
+        );
 
         await setCache(sessionId, CACHE_KEYS.featuredProducts, formatted);
         return NextResponse.json({ cached: false, data: formatted });
@@ -68,7 +64,10 @@ export async function GET(request: NextRequest) {
       case 'packages': {
         const cached = await getCache(sessionId, CACHE_KEYS.packages);
         if (cached) {
-          return NextResponse.json({ cached: true, data: cached });
+          return NextResponse.json({
+            cached: true,
+            data: (cached as Record<string, unknown>[]).map((pkg) => serializePackage(pkg)),
+          });
         }
 
         // Fetch packages
@@ -79,8 +78,12 @@ export async function GET(request: NextRequest) {
           orderBy: { displayOrder: 'asc' },
         });
 
-        await setCache(sessionId, CACHE_KEYS.packages, packages);
-        return NextResponse.json({ cached: false, data: packages });
+        const serialized = packages.map((pkg) =>
+          serializePackage(pkg as Record<string, unknown>)
+        );
+
+        await setCache(sessionId, CACHE_KEYS.packages, serialized);
+        return NextResponse.json({ cached: false, data: serialized });
       }
 
       default:

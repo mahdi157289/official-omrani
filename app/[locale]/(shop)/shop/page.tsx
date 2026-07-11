@@ -1,8 +1,10 @@
 import { getTranslations } from 'next-intl/server';
+import { Suspense } from 'react';
 import { ProductCard } from '@/components/product-card';
 import { PackageCard } from '@/components/package-card';
 import { ShopFilters } from '@/components/shop-filters';
 import { ShopLayoutClient } from '@/components/shop-layout-client';
+import { serializeStoreItem } from '@/lib/serialize-client';
 
 async function getStoreItems(sessionId: string, search?: string, categorySlug?: string, minPrice?: number, maxPrice?: number, type?: string) {
   try {
@@ -14,7 +16,7 @@ async function getStoreItems(sessionId: string, search?: string, categorySlug?: 
     // Try to get from cache first
     const cached = await getCache<any[]>(sessionId, cacheKey);
     if (cached) {
-      return cached;
+      return cached.map((item) => serializeStoreItem(item as Record<string, unknown>));
     }
 
     const { prisma } = await import('@/lib/prisma');
@@ -84,10 +86,14 @@ async function getStoreItems(sessionId: string, search?: string, categorySlug?: 
       return dateB - dateA;
     });
 
-    // Cache the result
-    await setCache(sessionId, cacheKey, sortedItems);
+    const serialized = sortedItems.map((item) =>
+      serializeStoreItem(item as Record<string, unknown>)
+    );
 
-    return sortedItems;
+    // Cache the result
+    await setCache(sessionId, cacheKey, serialized);
+
+    return serialized;
 
   } catch (error) {
     console.error('Store fetch error:', error);
@@ -119,38 +125,12 @@ export default async function ShopPage({
   const parsedMaxPrice = maxPrice ? parseFloat(maxPrice) : undefined;
 
   const items = await getStoreItems(sessionId, search, category, parsedMinPrice, parsedMaxPrice, type);
-
-  const serializedItems = items.map(item => {
-    if (item.storeType === 'product') {
-      return {
-        ...item,
-        basePrice: Number(item.basePrice),
-        comparePrice: item.comparePrice ? Number(item.comparePrice) : null,
-        costPrice: item.costPrice ? Number(item.costPrice) : null,
-        createdAt: item.createdAt.toISOString(),
-        updatedAt: item.updatedAt.toISOString(),
-        variants: item.variants.map((v: any) => ({
-          ...v,
-          priceModifier: Number(v.priceModifier),
-          createdAt: v.createdAt.toISOString(),
-          updatedAt: v.updatedAt.toISOString(),
-        }))
-      };
-    } else {
-      return {
-        ...item,
-        price: Number(item.price),
-        discountPrice: item.discountPrice ? Number(item.discountPrice) : null,
-        createdAt: (item as any).createdAt?.toISOString() || new Date().toISOString(),
-        updatedAt: (item as any).updatedAt?.toISOString() || new Date().toISOString(),
-      };
-    }
-  });
+  const serializedItems = items;
 
   return (
     <main className="min-h-screen bg-background">
       <div className="w-[95%] max-w-7xl mx-auto pt-40 pb-8">
-        <h1 className="text-4xl font-bold text-[#437983] mb-8 text-center uppercase tracking-widest px-4 py-2 border-b-2 border-[#D4AF37]/30 w-fit mx-auto">
+        <h1 className="text-4xl font-bold text-[#437983] mb-8 text-center uppercase tracking-widest px-4 py-2 border-b border-gold/40 w-fit mx-auto">
           {t('shop')}
         </h1>
 

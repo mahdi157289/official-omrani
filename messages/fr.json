@@ -28,7 +28,8 @@
     "hoursFriday": "Vendredi: Fermé",
     "noResults": "Aucun résultat trouvé",
     "dashboard": "Tableau de bord",
-    "logout": "Déconnexion"
+    "logout": "Déconnexion",
+    "loginButton": "Se connecter"
   },
   "home": {
     "title": "Makroudh Omrani",

@@ -12,6 +12,7 @@ import { HeroSlideshow } from '@/components/hero-slideshow';
 import { SectionWrapper } from '@/components/ui/section-wrapper';
 import { LocationSection } from '@/components/location-section';
 import { getServerSessionId } from '@/lib/get-session-id';
+import { serializeProduct } from '@/lib/serialize-client';
 
 async function getFeaturedProducts(sessionId?: string) {
   try {
@@ -20,7 +21,9 @@ async function getFeaturedProducts(sessionId?: string) {
       const { getCache, setCache } = await import('@/lib/redis-cache');
       const cached = await getCache(sessionId, 'products:featured');
       if (cached) {
-        return cached;
+        return (cached as Record<string, unknown>[]).map((p) =>
+          serializeProduct({ ...p, storeType: 'product' })
+        );
       }
     }
 
@@ -45,30 +48,19 @@ async function getFeaturedProducts(sessionId?: string) {
       orderBy: {
         createdAt: 'desc',
       },
-      take: 8,
+      take: 12,
     });
 
-    // Cache the results
+    const formatted = products.map((p) =>
+      serializeProduct({ ...p, storeType: 'product' } as Record<string, unknown>)
+    );
+
     if (sessionId) {
       const { setCache } = await import('@/lib/redis-cache');
-      const formatted = products.map(p => ({
-        ...p,
-        basePrice: Number(p.basePrice),
-        comparePrice: p.comparePrice ? Number(p.comparePrice) : null,
-        costPrice: p.costPrice ? Number(p.costPrice) : null,
-        createdAt: p.createdAt.toISOString(),
-        updatedAt: p.updatedAt.toISOString(),
-        publishedAt: p.publishedAt ? p.publishedAt.toISOString() : null,
-        variants: p.variants.map(v => ({
-          ...v,
-          priceModifier: Number(v.priceModifier)
-        }))
-      }));
       await setCache(sessionId, 'products:featured', formatted);
-      return formatted;
     }
 
-    return products;
+    return formatted;
   } catch (error) {
     console.error('Error fetching featured products:', error);
     return [];
@@ -83,27 +75,7 @@ export default async function HomePage({
   const { locale } = await params;
   const sessionId = await getServerSessionId();
   const t = await getTranslations('home');
-  const rawProducts = (await getFeaturedProducts(sessionId)) as any[];
-  
-  // If products are already formatted (from cache), use them directly
-  const featuredProducts =
-    rawProducts.length > 0 &&
-    'basePrice' in rawProducts[0] &&
-    typeof (rawProducts[0] as any).basePrice === 'number'
-    ? rawProducts
-      : rawProducts.map((p: any) => ({
-    ...p,
-    basePrice: Number(p.basePrice),
-    comparePrice: p.comparePrice ? Number(p.comparePrice) : null,
-    costPrice: p.costPrice ? Number(p.costPrice) : null,
-    createdAt: p.createdAt.toISOString(),
-    updatedAt: p.updatedAt.toISOString(),
-    publishedAt: p.publishedAt ? p.publishedAt.toISOString() : null,
-          variants: p.variants.map((v: any) => ({
-      ...v,
-            priceModifier: Number(v.priceModifier),
-          })),
-  }));
+  const featuredProducts = await getFeaturedProducts(sessionId);
 
   return (
     <main className="min-h-screen bg-background">
@@ -125,7 +97,7 @@ export default async function HomePage({
 
       {/* Featured Section */}
       <SectionWrapper id="featured" className="py-24 bg-background">
-        <div className="container mx-auto px-4">
+        <div className="w-[88%] max-w-6xl mx-auto">
           <SectionTitle
             title={t('featuredTitle')}
           />
@@ -152,7 +124,7 @@ export default async function HomePage({
 
       {/* About Section */}
       <SectionWrapper id="about" className="py-24 bg-background overflow-hidden">
-        <div className="w-[95%] max-w-7xl mx-auto">
+        <div className="w-[88%] max-w-6xl mx-auto">
           <GlassCard>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
               <FadeIn direction="right">

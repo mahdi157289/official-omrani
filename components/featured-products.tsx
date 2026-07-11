@@ -216,7 +216,7 @@ export function FeaturedProducts({ locale, products = [] }: { locale: string; pr
         <div className="h-px bg-primary/20 w-full max-w-xs hidden md:block"></div>
         <Link
           href={`/${locale}/shop`}
-          className="mx-6 group relative inline-flex items-center gap-2 px-8 py-3 bg-white/5 backdrop-blur-lg border-2 border-primary text-primary hover:bg-primary hover:text-white rounded-full font-bold transition-all duration-300 shadow-md hover:shadow-xl gold-border glare-effect"
+          className="mx-6 group relative inline-flex items-center gap-2 px-8 py-3 bg-white/5 backdrop-blur-lg text-gold hover:bg-gold/10 hover:text-white rounded-full font-bold transition-all duration-300 shadow-md hover:shadow-xl gold-border glare-effect cursor-pointer"
         >
           <span>
             {t('viewAllProducts')}

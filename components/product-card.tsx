@@ -180,7 +180,7 @@ export function ProductCard({ product, locale }: ProductCardProps) {
             {ingredients}
           </p>
         )}
-        <p className="text-3xl font-bold text-primary mt-auto mb-4 text-center">
+        <p className="text-3xl font-bold text-gold mt-auto mb-4 text-center">
           {formatPrice(product.basePrice)}
         </p>
 

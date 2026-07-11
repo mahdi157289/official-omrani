@@ -9,6 +9,7 @@ import { OrderModal } from './order-modal';
 
 export function CartSidebar({ locale }: { locale: string }) {
   const { items, isOpen, closeCart, removeFromCart, updateQuantity, total, formatPrice } = useCart();
+  const router = useRouter();
   const [mounted, setMounted] = useState(false);
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
 
@@ -16,13 +17,12 @@ export function CartSidebar({ locale }: { locale: string }) {
     setMounted(true);
   }, []);
 
-  if (!mounted) return null;
-
-  const router = useRouter();
   const handlePurchase = () => {
     closeCart();
     router.push(`/${locale}/checkout`);
   };
+
+  if (!mounted) return null;
 
   return (
     <>
@@ -44,11 +44,11 @@ export function CartSidebar({ locale }: { locale: string }) {
           {/* Header */}
           <div className="flex items-center justify-between p-6 border-b border-white/10 bg-black/20">
             <div className="flex items-center gap-3">
-              <ShoppingBag className="w-6 h-6 text-[#D4AF37]" />
+              <ShoppingBag className="w-6 h-6 text-gold" />
               <h2 className="text-xl font-bold text-white uppercase tracking-wider">
                 {locale === 'ar' ? 'سلة المشتريات' : locale === 'fr' ? 'Mon Panier' : 'My Cart'}
               </h2>
-              <span className="bg-[#D4AF37]/20 text-[#D4AF37] text-xs font-bold px-2 py-1 rounded-full">
+              <span className="bg-gold/20 text-gold text-xs font-bold px-2 py-1 rounded-full">
                 {items.length}
               </span>
             </div>
@@ -106,7 +106,7 @@ export function CartSidebar({ locale }: { locale: string }) {
                       {item.variantName && (
                         <p className="text-sm text-white/50">{item.variantName}</p>
                       )}
-                      <p className="text-[#D4AF37] font-bold mt-1">{formatPrice(item.price)}</p>
+                      <p className="text-gold font-bold mt-1">{formatPrice(item.price)}</p>
                     </div>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3 bg-white/5 rounded-lg p-1">
@@ -143,7 +143,7 @@ export function CartSidebar({ locale }: { locale: string }) {
             <div className="p-6 border-t border-white/10 bg-black/40">
               <div className="flex items-center justify-between mb-4 text-lg font-bold">
                 <span className="text-white/60">{locale === 'ar' ? 'المجموع' : locale === 'fr' ? 'Total' : 'Total'}</span>
-                <span className="text-[#D4AF37] text-xl">{formatPrice(total)}</span>
+                <span className="text-gold text-xl">{formatPrice(total)}</span>
               </div>
               <button
                 onClick={handlePurchase}
